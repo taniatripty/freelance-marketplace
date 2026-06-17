@@ -136,8 +136,8 @@ const Navbar = () => {
         About
       </NavLink>
 
-      <NavLink to="/allarticle" className={linkClass}>
-        Articles
+      <NavLink to="/becomefreelancer" className={linkClass}>
+        Become a Freelancer
       </NavLink>
 
       <NavLink to="/entertainment" className={linkClass}>
@@ -212,9 +212,7 @@ const Navbar = () => {
       {/* MOBILE MENU */}
       {mobileMenu && (
         <div className="lg:hidden bg-gray-800 px-4 py-4 flex flex-col gap-3">
-          <div className="text-lg font-bold text-indigo-400 pb-2 border-b border-gray-700">
-            {projectTitle}
-          </div>
+          
 
           {links}
 
@@ -232,7 +230,7 @@ const Navbar = () => {
                 </div>
 
                 <button
-                  onClick={logout}
+                  onClick={logOut}
                   className="bg-red-500 px-3 py-1 rounded"
                 >
                   Logout

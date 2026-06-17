@@ -6,10 +6,12 @@ import Login from "@/Auth/login";
 import AboutUs from "@/pages/shared/home/About";
 import Register from "@/Auth/register";
 import BecomeFreelancer from "@/pages/BecomeAfreelancer/becamefreelancer";
+import ErrorPage from "@/components/Error/Error";
 export const router = createBrowserRouter([
   {
     path: "/",
    Component:MainLayout,
+   errorElement:<ErrorPage></ErrorPage>,
    children:[
     {
       index:true,
