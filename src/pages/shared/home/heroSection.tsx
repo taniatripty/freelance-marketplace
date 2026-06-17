@@ -128,7 +128,7 @@ export default function Hero() {
               </Link>
 
               <Link
-                to="/register"
+                to="/becomefreelancer"
                 className="rounded-xl border border-slate-300 px-6 py-3 font-medium transition hover:bg-slate-100"
               >
                 Become a Freelancer

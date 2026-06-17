@@ -5,6 +5,7 @@ import Home from "@/pages/shared/home/home";
 import Login from "@/Auth/login";
 import AboutUs from "@/pages/shared/home/About";
 import Register from "@/Auth/register";
+import BecomeFreelancer from "@/pages/BecomeAfreelancer/becamefreelancer";
 export const router = createBrowserRouter([
   {
     path: "/",
@@ -18,6 +19,11 @@ export const router = createBrowserRouter([
     {
       path:'/aboutus',
       element:<AboutUs></AboutUs>
+    },
+    {
+      path:'/becomefreelancer',
+      element:<BecomeFreelancer></BecomeFreelancer>
+
     },
     {
       path:'/login',
