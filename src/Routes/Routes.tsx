@@ -7,6 +7,7 @@ import AboutUs from "@/pages/shared/home/About";
 import Register from "@/Auth/register";
 import BecomeFreelancer from "@/pages/BecomeAfreelancer/becamefreelancer";
 import ErrorPage from "@/components/Error/Error";
+import FreelancerDetails from "@/pages/AllFreelancer/freelancerDetails";
 export const router = createBrowserRouter([
   {
     path: "/",
@@ -25,6 +26,11 @@ export const router = createBrowserRouter([
     {
       path:'/becomefreelancer',
       element:<BecomeFreelancer></BecomeFreelancer>
+
+    },
+    {
+      path:"/freelancer/:id",
+      element:<FreelancerDetails></FreelancerDetails>
 
     },
     {

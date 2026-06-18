@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import axiosInstance from "@/UseAxios/axios";
+import { Link } from "react-router";
 
 type Freelancer = {
   _id: string;
@@ -87,9 +88,11 @@ const AllFreelancers = () => {
               ))}
             </div>
 
-            <button className="mt-4 w-full bg-indigo-600 text-white py-2 rounded-lg hover:bg-indigo-700 transition">
-              View Profile
-            </button>
+           <Link to={`/freelancer/${f._id}`}>
+  <button className="mt-4 w-full bg-indigo-600 text-white py-2 rounded-lg hover:bg-indigo-700 transition">
+    View Profile
+  </button>
+</Link>
           </div>
         ))}
       </div>
