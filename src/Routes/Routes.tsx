@@ -8,6 +8,9 @@ import Register from "@/Auth/register";
 import BecomeFreelancer from "@/pages/BecomeAfreelancer/becamefreelancer";
 import ErrorPage from "@/components/Error/Error";
 import FreelancerDetails from "@/pages/AllFreelancer/freelancerDetails";
+import AddCategory from "@/Categories/Categories";
+import CategoriesTable from "@/Categories/CategoriesTable";
+
 export const router = createBrowserRouter([
   {
     path: "/",
@@ -32,6 +35,14 @@ export const router = createBrowserRouter([
       path:"/freelancer/:id",
       element:<FreelancerDetails></FreelancerDetails>
 
+    },
+    {
+      path:"/categories",
+      element:<AddCategory></AddCategory>
+    },
+    {
+      path:"/categorytable",
+      element:<CategoriesTable></CategoriesTable>
     },
     {
       path:'/login',

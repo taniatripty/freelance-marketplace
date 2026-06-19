@@ -2,7 +2,6 @@
 
 // import { useAuth } from "@/AuthContex/UseAuth";
 // import axiosInstance from "@/UseAxios/axios";
-
 // import { useState } from "react";
 
 // const SKILL_OPTIONS = [
@@ -28,7 +27,6 @@
 
 // const BecomeFreelancer = () => {
 //   const { user } = useAuth();
-
 //   const [loading, setLoading] = useState(false);
 
 //   const [formData, setFormData] = useState({
@@ -97,6 +95,9 @@
 
 //     const payload = {
 //       userId: user?.uid,
+//       name: user?.displayName,
+//       email: user?.email,
+
 //       title: formData.title,
 //       bio: formData.bio,
 //       skills: selectedSkills,
@@ -104,8 +105,10 @@
 //         .split(",")
 //         .map((l) => l.trim())
 //         .filter(Boolean),
+
 //       experience: formData.experience,
 //       hourlyRate: Number(formData.hourlyRate),
+
 //       portfolio: portfolio.filter(
 //         (p) => p.title || p.url || p.description
 //       ),
@@ -120,9 +123,9 @@
 //       );
 
 //       console.log("Success:", data);
-//       alert("Successfully became freelancer!");
+//       alert("Freelancer profile created successfully!");
 
-//       // optional reset
+//       // reset form
 //       setFormData({
 //         title: "",
 //         bio: "",
@@ -130,15 +133,12 @@
 //         experience: "",
 //         hourlyRate: "",
 //       });
+
 //       setSelectedSkills([]);
 //       setPortfolio([{ title: "", url: "", description: "" }]);
 //     } catch (error: any) {
 //       console.error(error);
-
-//       alert(
-//         error?.response?.data?.message ||
-//           "Something went wrong"
-//       );
+//       alert(error?.response?.data?.message || "Error occurred");
 //     } finally {
 //       setLoading(false);
 //     }
@@ -151,6 +151,14 @@
 //         <h2 className="text-2xl font-bold text-center text-indigo-600 mb-6">
 //           Become a Freelancer
 //         </h2>
+
+//         {/* USER INFO */}
+//         <div className="mb-4 text-center text-sm text-gray-600">
+//           Logged in as:{" "}
+//           <span className="font-medium">
+//             {user?.displayName} ({user?.email})
+//           </span>
+//         </div>
 
 //         <form onSubmit={handleSubmit} className="space-y-4">
 
@@ -211,7 +219,7 @@
 //           <input
 //             type="text"
 //             name="experience"
-//             placeholder="Experience (e.g. 2 years)"
+//             placeholder="Experience"
 //             value={formData.experience}
 //             onChange={handleChange}
 //             className="w-full p-2 border rounded-lg"
@@ -243,20 +251,14 @@
 
 //             <div className="space-y-3 mt-2">
 //               {portfolio.map((item, index) => (
-//                 <div
-//                   key={index}
-//                   className="border p-3 rounded-lg space-y-2"
-//                 >
+//                 <div key={index} className="border p-3 rounded-lg space-y-2">
+
 //                   <input
 //                     type="text"
 //                     placeholder="Project Title"
 //                     value={item.title}
 //                     onChange={(e) =>
-//                       handlePortfolioChange(
-//                         index,
-//                         "title",
-//                         e.target.value
-//                       )
+//                       handlePortfolioChange(index, "title", e.target.value)
 //                     }
 //                     className="w-full p-2 border rounded"
 //                   />
@@ -266,11 +268,7 @@
 //                     placeholder="Project URL"
 //                     value={item.url}
 //                     onChange={(e) =>
-//                       handlePortfolioChange(
-//                         index,
-//                         "url",
-//                         e.target.value
-//                       )
+//                       handlePortfolioChange(index, "url", e.target.value)
 //                     }
 //                     className="w-full p-2 border rounded"
 //                   />
@@ -279,11 +277,7 @@
 //                     placeholder="Description"
 //                     value={item.description}
 //                     onChange={(e) =>
-//                       handlePortfolioChange(
-//                         index,
-//                         "description",
-//                         e.target.value
-//                       )
+//                       handlePortfolioChange(index, "description", e.target.value)
 //                     }
 //                     className="w-full p-2 border rounded"
 //                   />
@@ -316,9 +310,10 @@
 
 // export default BecomeFreelancer;
 
+
 import { useAuth } from "@/AuthContex/UseAuth";
 import axiosInstance from "@/UseAxios/axios";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const SKILL_OPTIONS = [
   "React",
@@ -335,6 +330,12 @@ const SKILL_OPTIONS = [
   "Figma",
 ];
 
+type Category = {
+  _id: string;
+  name: string;
+  icon: string;
+};
+
 type PortfolioItem = {
   title: string;
   url: string;
@@ -343,10 +344,12 @@ type PortfolioItem = {
 
 const BecomeFreelancer = () => {
   const { user } = useAuth();
+
+  const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(false);
 
   const [formData, setFormData] = useState({
-    title: "",
+    category: "",
     bio: "",
     languages: "",
     experience: "",
@@ -359,9 +362,25 @@ const BecomeFreelancer = () => {
     { title: "", url: "", description: "" },
   ]);
 
-  // ---------------- INPUT ----------------
+  // ---------------- FETCH CATEGORIES ----------------
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const res = await axiosInstance.get("/categories");
+        setCategories(res.data?.data || []);
+      } catch (error) {
+        console.error("Category fetch error:", error);
+      }
+    };
+
+    fetchCategories();
+  }, []);
+
+  // ---------------- INPUT CHANGE (FIXED TYPE) ----------------
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >
   ) => {
     setFormData((prev) => ({
       ...prev,
@@ -411,20 +430,15 @@ const BecomeFreelancer = () => {
 
     const payload = {
       userId: user?.uid,
-      name: user?.displayName,
-      email: user?.email,
-
-      title: formData.title,
+      title: formData.category, // category becomes title
       bio: formData.bio,
       skills: selectedSkills,
       languages: formData.languages
         .split(",")
         .map((l) => l.trim())
         .filter(Boolean),
-
       experience: formData.experience,
       hourlyRate: Number(formData.hourlyRate),
-
       portfolio: portfolio.filter(
         (p) => p.title || p.url || p.description
       ),
@@ -438,12 +452,12 @@ const BecomeFreelancer = () => {
         payload
       );
 
-      console.log("Success:", data);
+      console.log(data);
       alert("Freelancer profile created successfully!");
 
       // reset form
       setFormData({
-        title: "",
+        category: "",
         bio: "",
         languages: "",
         experience: "",
@@ -454,7 +468,7 @@ const BecomeFreelancer = () => {
       setPortfolio([{ title: "", url: "", description: "" }]);
     } catch (error: any) {
       console.error(error);
-      alert(error?.response?.data?.message || "Error occurred");
+      alert(error?.response?.data?.message || "Something went wrong");
     } finally {
       setLoading(false);
     }
@@ -468,26 +482,28 @@ const BecomeFreelancer = () => {
           Become a Freelancer
         </h2>
 
-        {/* USER INFO */}
-        <div className="mb-4 text-center text-sm text-gray-600">
-          Logged in as:{" "}
-          <span className="font-medium">
-            {user?.displayName} ({user?.email})
-          </span>
-        </div>
-
         <form onSubmit={handleSubmit} className="space-y-4">
 
-          {/* TITLE */}
-          <input
-            type="text"
-            name="title"
-            placeholder="Professional Title"
-            value={formData.title}
-            onChange={handleChange}
-            className="w-full p-2 border rounded-lg"
-            required
-          />
+          {/* CATEGORY SELECT */}
+          <div>
+            <label className="font-medium">Professional Title</label>
+
+            <select
+              name="category"
+              value={formData.category}
+              onChange={handleChange}
+              className="w-full p-2 border rounded-lg mt-2"
+              required
+            >
+              <option value="">Select Category</option>
+
+              {categories.map((cat) => (
+                <option key={cat._id} value={cat.name}>
+                  {cat.name}
+                </option>
+              ))}
+            </select>
+          </div>
 
           {/* BIO */}
           <textarea
@@ -506,13 +522,13 @@ const BecomeFreelancer = () => {
             <div className="flex flex-wrap gap-2 mt-2">
               {SKILL_OPTIONS.map((skill) => (
                 <button
-                  key={skill}
                   type="button"
+                  key={skill}
                   onClick={() => toggleSkill(skill)}
-                  className={`px-3 py-1 rounded-full border text-sm transition ${
+                  className={`px-3 py-1 rounded-full border text-sm ${
                     selectedSkills.includes(skill)
-                      ? "bg-indigo-600 text-white border-indigo-600"
-                      : "bg-white text-gray-700"
+                      ? "bg-indigo-600 text-white"
+                      : "bg-white"
                   }`}
                 >
                   {skill}
@@ -605,6 +621,7 @@ const BecomeFreelancer = () => {
                   >
                     Remove
                   </button>
+
                 </div>
               ))}
             </div>
@@ -614,10 +631,11 @@ const BecomeFreelancer = () => {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-indigo-600 text-white py-2 rounded-lg hover:bg-indigo-700 transition disabled:opacity-50"
+            className="w-full bg-indigo-600 text-white py-2 rounded-lg"
           >
             {loading ? "Submitting..." : "Submit Profile"}
           </button>
+
         </form>
       </div>
     </div>
