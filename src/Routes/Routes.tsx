@@ -10,6 +10,7 @@ import ErrorPage from "@/components/Error/Error";
 import FreelancerDetails from "@/pages/AllFreelancer/freelancerDetails";
 import AddCategory from "@/Categories/Categories";
 import CategoriesTable from "@/Categories/CategoriesTable";
+import CreateGig from "@/CreateGig/CreateGig";
 
 export const router = createBrowserRouter([
   {
@@ -43,6 +44,10 @@ export const router = createBrowserRouter([
     {
       path:"/categorytable",
       element:<CategoriesTable></CategoriesTable>
+    },
+    {
+      path:"/createGig",
+      element:<CreateGig></CreateGig>
     },
     {
       path:'/login',
