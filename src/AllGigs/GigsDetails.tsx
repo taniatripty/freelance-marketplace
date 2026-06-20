@@ -1,6 +1,8 @@
+
+
 import axiosInstance from "@/UseAxios/axios";
 import { useEffect, useState } from "react";
-import { useParams } from "react-router";
+import { useParams, useNavigate } from "react-router";
 
 type Gig = {
   _id: string;
@@ -21,6 +23,7 @@ type Gig = {
 
 const GigDetails = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
 
   const [gig, setGig] = useState<Gig | null>(null);
   const [loading, setLoading] = useState(true);
@@ -53,11 +56,14 @@ const GigDetails = () => {
     <div className="bg-slate-50 min-h-screen py-10">
       <div className="max-w-7xl mx-auto px-4">
         <div className="grid lg:grid-cols-3 gap-8">
-          {/* LEFT */}
+
+          {/* LEFT SECTION */}
           <div className="lg:col-span-2">
             <h1 className="text-4xl font-bold">{gig.title}</h1>
 
-            <p className="mt-3 text-slate-600">{gig.shortDescription}</p>
+            <p className="mt-3 text-slate-600">
+              {gig.shortDescription}
+            </p>
 
             {/* MAIN IMAGE */}
             <div className="mt-6">
@@ -74,7 +80,6 @@ const GigDetails = () => {
                 <img
                   key={index}
                   src={img}
-                  alt=""
                   onClick={() => setActiveImage(index)}
                   className={`w-24 h-20 rounded-lg object-cover cursor-pointer border-2 ${
                     activeImage === index
@@ -87,9 +92,12 @@ const GigDetails = () => {
 
             {/* DESCRIPTION */}
             <div className="bg-white rounded-2xl p-6 mt-8">
-              <h2 className="text-2xl font-bold mb-4">About This Gig</h2>
-
-              <p className="text-slate-700 leading-8">{gig.description}</p>
+              <h2 className="text-2xl font-bold mb-4">
+                About This Gig
+              </h2>
+              <p className="text-slate-700 leading-8">
+                {gig.description}
+              </p>
             </div>
 
             {/* FEATURES */}
@@ -106,7 +114,9 @@ const GigDetails = () => {
 
             {/* TAGS */}
             <div className="bg-white rounded-2xl p-6 mt-6">
-              <h2 className="text-2xl font-bold mb-4">Skills & Tags</h2>
+              <h2 className="text-2xl font-bold mb-4">
+                Skills & Tags
+              </h2>
 
               <div className="flex flex-wrap gap-3">
                 {Array.isArray(gig.tags) &&
@@ -151,22 +161,36 @@ const GigDetails = () => {
                 </div>
               </div>
 
-              <button className="w-full mt-6 bg-indigo-600 text-white py-3 rounded-xl hover:bg-indigo-700">
-                Continue (${gig.price})
-              </button>
+              {/* PURCHASE BUTTONS */}
+              <div className="mt-6 space-y-3">
+                <button
+                  onClick={() => navigate(`/checkout/${gig._id}`)}
+                  className="w-full bg-indigo-600 text-white py-3 rounded-xl font-semibold hover:bg-indigo-700 transition"
+                >
+                  Purchase Now - ${gig.price}
+                </button>
+
+                <button className="w-full border border-slate-300 py-3 rounded-xl font-semibold hover:bg-slate-50 transition">
+                  Contact Seller
+                </button>
+              </div>
             </div>
 
-            {/* SELLER */}
+            {/* SELLER INFO */}
             <div className="bg-white rounded-2xl p-6 mt-6">
-              <h2 className="text-xl font-bold">Seller Information</h2>
+              <h2 className="text-xl font-bold">
+                Seller Information
+              </h2>
 
               <div className="mt-4">
-                <h3 className="font-semibold text-lg">{gig.name}</h3>
-
+                <h3 className="font-semibold text-lg">
+                  {gig.name}
+                </h3>
                 <p className="text-slate-500">{gig.email}</p>
               </div>
             </div>
           </div>
+
         </div>
       </div>
     </div>

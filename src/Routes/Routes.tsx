@@ -13,6 +13,7 @@ import CategoriesTable from "@/Categories/CategoriesTable";
 import CreateGig from "@/CreateGig/CreateGig";
 import AllGigs from "@/AllGigs/Allgigs";
 import GigDetails from "@/AllGigs/GigsDetails";
+import Checkout from "@/Checkout/Checkout";
 
 export const router = createBrowserRouter([
   {
@@ -58,6 +59,10 @@ export const router = createBrowserRouter([
     {
       path:"/gigs/:id",
       element:<GigDetails></GigDetails>
+    },
+    {
+      path:"/checkout/:id",
+      element:<Checkout></Checkout>
     },
     {
       path:'/login',
