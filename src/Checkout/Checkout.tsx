@@ -64,7 +64,7 @@ const Checkout = () => {
 
       alert("Order placed successfully!");
 
-      navigate(`/orders/${res.data.data.insertedId}`);
+      console.log(res.data)
     } catch (error) {
       console.error(error);
       alert("Failed to place order");

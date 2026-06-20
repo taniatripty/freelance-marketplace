@@ -14,6 +14,9 @@ import CreateGig from "@/CreateGig/CreateGig";
 import AllGigs from "@/AllGigs/Allgigs";
 import GigDetails from "@/AllGigs/GigsDetails";
 import Checkout from "@/Checkout/Checkout";
+import MyPurchaseServices from "@/MyPurchaseService/MyPurchaseService";
+import ManageSellerOrders from "@/ManageSellerOrder/ManageSellerOrder";
+
 
 export const router = createBrowserRouter([
   {
@@ -63,6 +66,15 @@ export const router = createBrowserRouter([
     {
       path:"/checkout/:id",
       element:<Checkout></Checkout>
+    },
+    {
+      path:"/mypurchase",
+      element:<MyPurchaseServices></MyPurchaseServices>
+    },
+    {
+     path:"/managesellerOrder",
+     element:<ManageSellerOrders></ManageSellerOrders>
+
     },
     {
       path:'/login',

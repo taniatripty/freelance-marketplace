@@ -142,6 +142,12 @@ const Navbar = () => {
        <NavLink to="/createGig" className={linkClass}>
         Create Gigs
       </NavLink>
+      <NavLink to="/mypurchase" className={linkClass}>
+        My Purchase services
+      </NavLink>
+      <NavLink to="/managesellerOrder" className={linkClass}>
+        Manage Seller orders
+      </NavLink>
 
 
       <NavLink to="/entertainment" className={linkClass}>
