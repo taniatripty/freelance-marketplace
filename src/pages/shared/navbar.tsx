@@ -139,6 +139,10 @@ const Navbar = () => {
       <NavLink to="/becomefreelancer" className={linkClass}>
         Become a Freelancer
       </NavLink>
+       <NavLink to="/createGig" className={linkClass}>
+        Create Gigs
+      </NavLink>
+
 
       <NavLink to="/entertainment" className={linkClass}>
         Entertainment

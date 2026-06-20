@@ -1,3 +1,6 @@
+
+
+
 import React, { useEffect, useState } from "react";
 import axiosInstance from "@/UseAxios/axios";
 import axios from "axios";
@@ -42,9 +45,11 @@ const CreateGig = () => {
     fetchCategories();
   }, []);
 
-  // ---------------- HANDLE INPUT ----------------
+  // ---------------- INPUT CHANGE ----------------
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >
   ) => {
     setForm((prev) => ({
       ...prev,
@@ -52,10 +57,21 @@ const CreateGig = () => {
     }));
   };
 
-  // ---------------- IMAGE HANDLER ----------------
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(e.target.files || []);
-    setImages(files);
+  // ---------------- IMAGE HANDLER (MAX 3) ----------------
+const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const files = Array.from(e.target.files || []);
+
+  setImages((prev) => {
+    const combined = [...prev, ...files];
+    return combined.slice(0, 3);
+  });
+
+  e.target.value = "";
+};
+
+  // ---------------- REMOVE IMAGE ----------------
+  const removeImage = (index: number) => {
+    setImages((prev) => prev.filter((_, i) => i !== index));
   };
 
   // ---------------- CLOUDINARY UPLOAD ----------------
@@ -69,7 +85,9 @@ const CreateGig = () => {
     );
 
     const res = await axios.post(
-      `https://api.cloudinary.com/v1_1/${import.meta.env.VITE_CLOUDINARY_CLOUD_NAME}/image/upload`,
+      `https://api.cloudinary.com/v1_1/${
+        import.meta.env.VITE_CLOUDINARY_CLOUD_NAME
+      }/image/upload`,
       formData
     );
 
@@ -80,10 +98,14 @@ const CreateGig = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    if (images.length < 2) {
+      alert("Please upload at least 2 images");
+      return;
+    }
+
     try {
       setLoading(true);
 
-      // upload images
       const uploadedImages = await Promise.all(
         images.map((img) => uploadImage(img))
       );
@@ -110,15 +132,13 @@ const CreateGig = () => {
         status: "active",
         rating: 0,
         totalSales: 0,
-        views: 0,
-        orders: 0,
       };
 
       await axiosInstance.post("/gigs", payload);
 
       alert("Gig created successfully!");
 
-      // reset
+      // reset form
       setForm({
         title: "",
         shortDescription: "",
@@ -140,158 +160,149 @@ const CreateGig = () => {
     }
   };
 
-  const inputClass =
-    "w-full rounded-xl border border-slate-300 px-4 py-3 focus:outline-none focus:ring-4 focus:ring-blue-100 focus:border-blue-500";
-
   return (
     <div className="min-h-screen bg-slate-50 py-10">
       <div className="max-w-5xl mx-auto px-4">
 
-        {/* HEADER */}
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold">Create Gig</h1>
-          <p className="text-slate-500 mt-2">
-            Publish your service and start getting clients
-          </p>
-        </div>
+        <h1 className="text-4xl text-center font-bold text-indigo-600 mb-8">
+          Create Gig
+        </h1>
 
         <form onSubmit={handleSubmit} className="space-y-6">
 
-          {/* BASIC INFO */}
-          <div className="bg-white p-6 rounded-2xl border space-y-4">
-            <h2 className="text-xl font-semibold">Basic Info</h2>
+          {/* TITLE */}
+          <input
+            name="title"
+            placeholder="Gig Title"
+            value={form.title}
+            onChange={handleChange}
+            className="w-full border p-3 rounded-xl"
+          />
+
+          {/* SHORT DESCRIPTION */}
+          <input
+            name="shortDescription"
+            placeholder="Short Description"
+            value={form.shortDescription}
+            onChange={handleChange}
+            className="w-full border p-3 rounded-xl"
+          />
+
+          {/* DESCRIPTION */}
+          <textarea
+            name="description"
+            placeholder="Full Description"
+            value={form.description}
+            onChange={handleChange}
+            className="w-full border p-3 rounded-xl"
+            rows={5}
+          />
+
+          {/* CATEGORY */}
+          <select
+            name="categoryId"
+            value={form.categoryId}
+            onChange={handleChange}
+            className="w-full border p-3 rounded-xl"
+          >
+            <option value="">Select Category</option>
+            {categories.map((c) => (
+              <option key={c._id} value={c._id}>
+                {c.name}
+              </option>
+            ))}
+          </select>
+
+          {/* PRICE + DELIVERY + REVISIONS */}
+          <div className="grid grid-cols-3 gap-3">
+            <input
+              name="price"
+              type="number"
+              placeholder="Price"
+              onChange={handleChange}
+              className="border p-3 rounded-xl"
+            />
 
             <input
-              name="title"
-              placeholder="Gig Title"
-              className={inputClass}
+              name="deliveryDays"
+              type="number"
+              placeholder="Delivery Days"
               onChange={handleChange}
-              value={form.title}
+              className="border p-3 rounded-xl"
             />
 
             <input
-              name="shortDescription"
-              placeholder="Short Description"
-              className={inputClass}
+              name="revisions"
+              type="number"
+              placeholder="Revisions"
               onChange={handleChange}
-              value={form.shortDescription}
+              className="border p-3 rounded-xl"
             />
-
-            <textarea
-              name="description"
-              placeholder="Full Description"
-              rows={6}
-              className={inputClass}
-              onChange={handleChange}
-              value={form.description}
-            />
-
-            <select
-              name="categoryId"
-              className={inputClass}
-              onChange={handleChange}
-              value={form.categoryId}
-            >
-              <option value="">Select Category</option>
-              {categories.map((c) => (
-                <option key={c._id} value={c._id}>
-                  {c.name}
-                </option>
-              ))}
-            </select>
           </div>
 
-          {/* PRICING */}
-          <div className="bg-white p-6 rounded-2xl border space-y-4">
-            <h2 className="text-xl font-semibold">Pricing</h2>
+          {/* TAGS */}
+          <input
+            placeholder="Tags (comma separated)"
+            value={tags}
+            onChange={(e) => setTags(e.target.value)}
+            className="w-full border p-3 rounded-xl"
+          />
 
-            <div className="grid md:grid-cols-3 gap-4">
-              <input
-                name="price"
-                type="number"
-                placeholder="Price"
-                className={inputClass}
-                onChange={handleChange}
-              />
-
-              <input
-                name="deliveryDays"
-                type="number"
-                placeholder="Delivery Days"
-                className={inputClass}
-                onChange={handleChange}
-              />
-
-              <input
-                name="revisions"
-                type="number"
-                placeholder="Revisions"
-                className={inputClass}
-                onChange={handleChange}
-              />
-            </div>
-          </div>
-
-          {/* TAGS & FEATURES */}
-          <div className="bg-white p-6 rounded-2xl border space-y-4">
-            <h2 className="text-xl font-semibold">Tags & Features</h2>
-
-            <input
-              placeholder="Tags (comma separated)"
-              className={inputClass}
-              value={tags}
-              onChange={(e) => setTags(e.target.value)}
-            />
-
-            <input
-              placeholder="Features (comma separated)"
-              className={inputClass}
-              value={features}
-              onChange={(e) => setFeatures(e.target.value)}
-            />
-          </div>
+          {/* FEATURES */}
+          <input
+            placeholder="Features (comma separated)"
+            value={features}
+            onChange={(e) => setFeatures(e.target.value)}
+            className="w-full border p-3 rounded-xl"
+          />
 
           {/* SELLER INFO */}
-          <div className="bg-white p-6 rounded-2xl border space-y-4">
-            <h2 className="text-xl font-semibold">Seller Info</h2>
-
-            <input
-              value={user?.displayName || ""}
-              readOnly
-              className="bg-slate-100 px-4 py-3 rounded-xl w-full"
-            />
-
-            <input
-              value={user?.email || ""}
-              readOnly
-              className="bg-slate-100 px-4 py-3 rounded-xl w-full"
-            />
-          </div>
+          <input
+            value={user?.displayName || ""}
+            readOnly
+            className="w-full p-3 bg-gray-100 rounded-xl"
+          />
+          <input
+            value={user?.email || ""}
+            readOnly
+            className="w-full p-3 bg-gray-100 rounded-xl"
+          />
 
           {/* IMAGES */}
-          <div className="bg-white p-6 rounded-2xl border space-y-4">
-            <h2 className="text-xl font-semibold">Images</h2>
+          <input
+            type="file"
+            multiple
+            accept="image/*"
+            onChange={handleImageChange}
+          />
 
-            <input type="file" multiple onChange={handleImageChange} />
-
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-              {images.map((img, i) => (
+          <div className="grid grid-cols-3 gap-3 mt-3">
+            {images.map((img, i) => (
+              <div key={i} className="relative">
                 <img
-                  key={i}
                   src={URL.createObjectURL(img)}
-                  className="h-28 w-full object-cover rounded-lg border"
+                  className="h-28 w-full object-cover rounded"
                 />
-              ))}
-            </div>
+
+                <button
+                  type="button"
+                  onClick={() => removeImage(i)}
+                  className="absolute top-1 right-1 bg-red-500 text-white px-2 rounded"
+                >
+                  ×
+                </button>
+              </div>
+            ))}
           </div>
 
           {/* SUBMIT */}
           <button
             disabled={loading}
-            className="w-full bg-blue-600 text-white py-3 rounded-xl font-medium hover:bg-blue-700"
+            className="w-full bg-indigo-600 text-white py-3 rounded-xl"
           >
             {loading ? "Creating..." : "Create Gig"}
           </button>
+
         </form>
       </div>
     </div>

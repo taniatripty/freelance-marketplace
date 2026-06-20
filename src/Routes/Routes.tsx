@@ -11,6 +11,8 @@ import FreelancerDetails from "@/pages/AllFreelancer/freelancerDetails";
 import AddCategory from "@/Categories/Categories";
 import CategoriesTable from "@/Categories/CategoriesTable";
 import CreateGig from "@/CreateGig/CreateGig";
+import AllGigs from "@/AllGigs/Allgigs";
+import GigDetails from "@/AllGigs/GigsDetails";
 
 export const router = createBrowserRouter([
   {
@@ -48,6 +50,14 @@ export const router = createBrowserRouter([
     {
       path:"/createGig",
       element:<CreateGig></CreateGig>
+    },
+    {
+      path:"/allgigs",
+      element:<AllGigs></AllGigs>
+    },
+    {
+      path:"/gigs/:id",
+      element:<GigDetails></GigDetails>
     },
     {
       path:'/login',
