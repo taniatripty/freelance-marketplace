@@ -16,6 +16,7 @@ import GigDetails from "@/AllGigs/GigsDetails";
 import Checkout from "@/Checkout/Checkout";
 import MyPurchaseServices from "@/MyPurchaseService/MyPurchaseService";
 import ManageSellerOrders from "@/ManageSellerOrder/ManageSellerOrder";
+import Chat from "@/Chat/Chat";
 
 
 export const router = createBrowserRouter([
@@ -75,6 +76,10 @@ export const router = createBrowserRouter([
      path:"/managesellerOrder",
      element:<ManageSellerOrders></ManageSellerOrders>
 
+    },
+    {
+      path:"/chat/:orderId",
+      element:<Chat></Chat>
     },
     {
       path:'/login',
