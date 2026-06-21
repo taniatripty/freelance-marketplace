@@ -4,12 +4,15 @@
 // import { useEffect, useState } from "react";
 // import axiosInstance from "@/UseAxios/axios";
 // import { useAuth } from "@/AuthContex/UseAuth";
+// import { useNavigate } from "react-router";
 
 // type Order = {
 //   _id: string;
 //   gigId: string;
 //   gigTitle: string;
+//   buyerId: string;
 //   buyerName: string;
+//   sellerId: string;
 //   price: number;
 //   status: string;
 //   paymentStatus: string;
@@ -18,6 +21,7 @@
 
 // const ManageSellerOrders = () => {
 //   const { user } = useAuth();
+//   const navigate = useNavigate();
 
 //   const [orders, setOrders] = useState<Order[]>([]);
 //   const [loading, setLoading] = useState(true);
@@ -30,7 +34,6 @@
 //         const res = await axiosInstance.get(
 //           `/orders/seller/${user?.uid}`
 //         );
-
 //         setOrders(res.data.data);
 //       } catch (error) {
 //         console.error(error);
@@ -80,12 +83,9 @@
 //     }
 //   };
 
+//   // ---------------- LOADING ----------------
 //   if (loading) {
-//     return (
-//       <div className="text-center py-20">
-//         Loading Orders...
-//       </div>
-//     );
+//     return <div className="text-center py-20">Loading Orders...</div>;
 //   }
 
 //   return (
@@ -111,7 +111,6 @@
 //                   <h2 className="text-lg font-semibold">
 //                     {order.gigTitle}
 //                   </h2>
-
 //                   <p className="text-sm text-gray-500">
 //                     Buyer: {order.buyerName}
 //                   </p>
@@ -149,6 +148,8 @@
 
 //               {/* ACTIONS */}
 //               <div className="mt-5 flex flex-wrap gap-2">
+
+//                 {/* ACCEPT */}
 //                 {order.status === "pending" && (
 //                   <button
 //                     onClick={() =>
@@ -160,29 +161,55 @@
 //                   </button>
 //                 )}
 
+//                 {/* START WORK */}
 //                 {order.status === "accepted" && (
-//                   <button
-//                     onClick={() =>
-//                       updateStatus(
-//                         order._id,
-//                         "in_progress"
-//                       )
-//                     }
-//                     className="px-4 py-2 bg-purple-600 text-white rounded-lg text-sm"
-//                   >
-//                     Start Work
-//                   </button>
+//                   <>
+//                     <button
+//                       onClick={() =>
+//                         updateStatus(
+//                           order._id,
+//                           "in_progress"
+//                         )
+//                       }
+//                       className="px-4 py-2 bg-purple-600 text-white rounded-lg text-sm"
+//                     >
+//                       Start Work
+//                     </button>
+
+//                     {/* CHAT BUTTON */}
+//                     <button
+//                       onClick={() =>
+//                         navigate(`/chat/${order._id}`)
+//                       }
+//                       className="px-4 py-2 bg-green-600 text-white rounded-lg text-sm"
+//                     >
+//                       Chat
+//                     </button>
+//                   </>
 //                 )}
 
+//                 {/* IN PROGRESS */}
 //                 {order.status === "in_progress" && (
-//                   <button
-//                     onClick={() =>
-//                       updateStatus(order._id, "completed")
-//                     }
-//                     className="px-4 py-2 bg-green-600 text-white rounded-lg text-sm"
-//                   >
-//                     Mark Completed
-//                   </button>
+//                   <>
+//                     <button
+//                       onClick={() =>
+//                         updateStatus(order._id, "completed")
+//                       }
+//                       className="px-4 py-2 bg-green-600 text-white rounded-lg text-sm"
+//                     >
+//                       Mark Completed
+//                     </button>
+
+//                     {/* CHAT ALSO AVAILABLE */}
+//                     <button
+//                       onClick={() =>
+//                         navigate(`/chat/${order._id}`)
+//                       }
+//                       className="px-4 py-2 bg-green-500 text-white rounded-lg text-sm"
+//                     >
+//                       Chat
+//                     </button>
+//                   </>
 //                 )}
 
 //                 {updatingId === order._id && (
@@ -218,6 +245,9 @@ type Order = {
   status: string;
   paymentStatus: string;
   createdAt: string;
+
+  // 🔥 backend should send this
+  unreadCount?: number;
 };
 
 const ManageSellerOrders = () => {
@@ -232,9 +262,13 @@ const ManageSellerOrders = () => {
   useEffect(() => {
     const fetchOrders = async () => {
       try {
+        if (!user?.uid) return;
+
         const res = await axiosInstance.get(
-          `/orders/seller/${user?.uid}`
+          `/orders/seller/${user.uid}`
         );
+
+        // backend should already include unreadCount
         setOrders(res.data.data);
       } catch (error) {
         console.error(error);
@@ -243,7 +277,7 @@ const ManageSellerOrders = () => {
       }
     };
 
-    if (user?.uid) fetchOrders();
+    fetchOrders();
   }, [user]);
 
   // ---------------- UPDATE STATUS ----------------
@@ -251,9 +285,7 @@ const ManageSellerOrders = () => {
     try {
       setUpdatingId(id);
 
-      await axiosInstance.patch(`/orders/${id}`, {
-        status,
-      });
+      await axiosInstance.patch(`/orders/${id}`, { status });
 
       setOrders((prev) =>
         prev.map((o) =>
@@ -268,7 +300,7 @@ const ManageSellerOrders = () => {
     }
   };
 
-  // ---------------- STATUS COLOR ----------------
+  // ---------------- STATUS COLORS ----------------
   const statusColor = (status: string) => {
     switch (status) {
       case "pending":
@@ -286,143 +318,160 @@ const ManageSellerOrders = () => {
 
   // ---------------- LOADING ----------------
   if (loading) {
-    return <div className="text-center py-20">Loading Orders...</div>;
+    return (
+      <div className="text-center py-20 text-gray-500">
+        Loading Orders...
+      </div>
+    );
+  }
+
+  // ---------------- EMPTY ----------------
+  if (orders.length === 0) {
+    return (
+      <div className="text-center py-20 text-gray-500">
+        No orders received yet
+      </div>
+    );
   }
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-10">
-      <h1 className="text-3xl font-bold mb-8">
+      <h1 className="text-3xl font-bold mb-8 text-center">
         Manage Orders
       </h1>
 
-      {orders.length === 0 ? (
-        <p className="text-center text-gray-500">
-          No orders received yet
-        </p>
-      ) : (
-        <div className="grid md:grid-cols-2 gap-6">
-          {orders.map((order) => (
-            <div
-              key={order._id}
-              className="bg-white border rounded-2xl p-5 shadow-sm hover:shadow-md transition"
-            >
-              {/* HEADER */}
-              <div className="flex justify-between items-start">
-                <div>
-                  <h2 className="text-lg font-semibold">
-                    {order.gigTitle}
-                  </h2>
-                  <p className="text-sm text-gray-500">
-                    Buyer: {order.buyerName}
-                  </p>
-                </div>
+      <div className="grid md:grid-cols-2 gap-6">
+        {orders.map((order) => (
+          <div
+            key={order._id}
+            className="relative bg-white border rounded-2xl p-5 shadow-sm hover:shadow-md transition"
+          >
+            {/* 🔴 UNREAD BADGE */}
+            {order.unreadCount && order.unreadCount > 0 && (
+              <span className="absolute top-3 right-3 bg-red-500 text-white text-xs px-2 py-1 rounded-full">
+                {order.unreadCount} new
+              </span>
+            )}
 
-                <span
-                  className={`px-3 py-1 rounded-full text-xs font-medium ${statusColor(
-                    order.status
-                  )}`}
-                >
-                  {order.status}
+            {/* HEADER */}
+            <div className="flex justify-between items-start">
+              <div>
+                <h2 className="text-lg font-semibold">
+                  {order.gigTitle}
+                </h2>
+                <p className="text-sm text-gray-500">
+                  Buyer: {order.buyerName}
+                </p>
+              </div>
+
+              <span
+                className={`px-3 py-1 rounded-full text-xs font-medium ${statusColor(
+                  order.status
+                )}`}
+              >
+                {order.status}
+              </span>
+            </div>
+
+            {/* INFO */}
+            <div className="mt-4 space-y-2 text-sm text-gray-600">
+              <p>
+                💰 Price:{" "}
+                <span className="font-semibold">
+                  ${order.price}
                 </span>
-              </div>
+              </p>
 
-              {/* INFO */}
-              <div className="mt-4 space-y-2 text-sm text-gray-600">
-                <p>
-                  💰 Price:{" "}
-                  <span className="font-semibold">
-                    ${order.price}
-                  </span>
-                </p>
+              <p>
+                📅 Date:{" "}
+                {new Date(order.createdAt).toLocaleDateString()}
+              </p>
 
-                <p>
-                  📅 Date:{" "}
-                  {new Date(
-                    order.createdAt
-                  ).toLocaleDateString()}
-                </p>
+              <p>💳 Payment: {order.paymentStatus}</p>
+            </div>
 
-                <p>
-                  💳 Payment: {order.paymentStatus}
-                </p>
-              </div>
+            {/* ACTIONS */}
+            <div className="mt-5 flex flex-wrap gap-2">
 
-              {/* ACTIONS */}
-              <div className="mt-5 flex flex-wrap gap-2">
+              {/* ACCEPT */}
+              {order.status === "pending" && (
+                <button
+                  onClick={() =>
+                    updateStatus(order._id, "accepted")
+                  }
+                  className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm"
+                >
+                  Accept Order
+                </button>
+              )}
 
-                {/* ACCEPT */}
-                {order.status === "pending" && (
+              {/* ACCEPTED */}
+              {order.status === "accepted" && (
+                <>
                   <button
                     onClick={() =>
-                      updateStatus(order._id, "accepted")
+                      updateStatus(order._id, "in_progress")
                     }
-                    className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm"
+                    className="px-4 py-2 bg-purple-600 text-white rounded-lg text-sm"
                   >
-                    Accept Order
+                    Start Work
                   </button>
-                )}
 
-                {/* START WORK */}
-                {order.status === "accepted" && (
-                  <>
-                    <button
-                      onClick={() =>
-                        updateStatus(
-                          order._id,
-                          "in_progress"
-                        )
-                      }
-                      className="px-4 py-2 bg-purple-600 text-white rounded-lg text-sm"
-                    >
-                      Start Work
-                    </button>
+                  <button
+                    onClick={() =>
+                      navigate(`/chat/${order._id}`)
+                    }
+                    className="relative px-4 py-2 bg-green-600 text-white rounded-lg text-sm"
+                  >
+                    Chat
 
-                    {/* CHAT BUTTON */}
-                    <button
-                      onClick={() =>
-                        navigate(`/chat/${order._id}`)
-                      }
-                      className="px-4 py-2 bg-green-600 text-white rounded-lg text-sm"
-                    >
-                      Chat
-                    </button>
-                  </>
-                )}
+                    {order.unreadCount! > 0 && (
+                      <span className="ml-2 bg-red-500 text-white text-xs px-2 rounded-full">
+                        {order.unreadCount}
+                      </span>
+                    )}
+                  </button>
+                </>
+              )}
 
-                {/* IN PROGRESS */}
-                {order.status === "in_progress" && (
-                  <>
-                    <button
-                      onClick={() =>
-                        updateStatus(order._id, "completed")
-                      }
-                      className="px-4 py-2 bg-green-600 text-white rounded-lg text-sm"
-                    >
-                      Mark Completed
-                    </button>
+              {/* IN PROGRESS */}
+              {order.status === "in_progress" && (
+                <>
+                  <button
+                    onClick={() =>
+                      updateStatus(order._id, "completed")
+                    }
+                    className="px-4 py-2 bg-green-600 text-white rounded-lg text-sm"
+                  >
+                    Complete
+                  </button>
 
-                    {/* CHAT ALSO AVAILABLE */}
-                    <button
-                      onClick={() =>
-                        navigate(`/chat/${order._id}`)
-                      }
-                      className="px-4 py-2 bg-green-500 text-white rounded-lg text-sm"
-                    >
-                      Chat
-                    </button>
-                  </>
-                )}
+                  <button
+                    onClick={() =>
+                      navigate(`/chat/${order._id}`)
+                    }
+                    className="relative px-4 py-2 bg-green-500 text-white rounded-lg text-sm"
+                  >
+                    Chat
 
-                {updatingId === order._id && (
-                  <span className="text-sm text-gray-500">
-                    Updating...
-                  </span>
-                )}
-              </div>
+                    {order.unreadCount! > 0 && (
+                      <span className="ml-2 bg-red-500 text-white text-xs px-2 rounded-full">
+                        {order.unreadCount}
+                      </span>
+                    )}
+                  </button>
+                </>
+              )}
+
+              {updatingId === order._id && (
+                <span className="text-sm text-gray-500">
+                  Updating...
+                </span>
+              )}
             </div>
-          ))}
-        </div>
-      )}
+          </div>
+        ))}
+      </div>
     </div>
   );
 };
