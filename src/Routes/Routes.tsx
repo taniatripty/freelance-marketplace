@@ -17,6 +17,7 @@ import Checkout from "@/Checkout/Checkout";
 import MyPurchaseServices from "@/MyPurchaseService/MyPurchaseService";
 import ManageSellerOrders from "@/ManageSellerOrder/ManageSellerOrder";
 import Chat from "@/Chat/Chat";
+import PaymentPage from "@/PaymentPage/PaymentPage";
 
 
 export const router = createBrowserRouter([
@@ -80,6 +81,10 @@ export const router = createBrowserRouter([
     {
       path:"/chat/:orderId",
       element:<Chat></Chat>
+    },
+    {
+      path:"/payment/:orderId",
+      element:<PaymentPage></PaymentPage>
     },
     {
       path:'/login',
