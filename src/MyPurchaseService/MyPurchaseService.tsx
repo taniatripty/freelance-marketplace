@@ -187,8 +187,17 @@ type Order = {
   paymentStatus: string;
   createdAt: string;
 
-  // 🔔 future-ready (unread messages)
-  unreadCount?: number;
+  unread?: boolean; // 🔥 from notification system
+};
+
+type Notification = {
+  _id: string;
+  userId: string;
+  type: string;
+  title: string;
+  message: string;
+  orderId: string;
+  isRead: boolean;
 };
 
 const MyPurchaseServices = () => {
@@ -196,22 +205,42 @@ const MyPurchaseServices = () => {
   const navigate = useNavigate();
 
   const [orders, setOrders] = useState<Order[]>([]);
+  const [notifications, setNotifications] = useState<Notification[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // ---------------- FETCH ORDERS ----------------
+  // ---------------- FETCH DATA ----------------
   useEffect(() => {
     if (!user?.uid) return;
 
-    const fetchOrders = async () => {
+    const fetchData = async () => {
       try {
         setLoading(true);
 
-        const res = await axiosInstance.get(
-          `/orders/buyer/${user.uid}`
-        );
+        const [orderRes, notifRes] = await Promise.all([
+          axiosInstance.get(`/orders/buyer/${user.uid}`),
+          axiosInstance.get(`/notifications/${user.uid}`),
+        ]);
 
-        setOrders(res.data.data);
+        const ordersData = orderRes.data.data;
+        const notificationsData = notifRes.data.data;
+
+        setNotifications(notificationsData);
+
+        // 🔥 map unread status per order using notifications ONLY
+        const enrichedOrders = ordersData.map((order: Order) => {
+          const hasUnread = notificationsData.some(
+            (n: Notification) =>
+              n.orderId === order._id && n.isRead === false
+          );
+
+          return {
+            ...order,
+            unread: hasUnread,
+          };
+        });
+
+        setOrders(enrichedOrders);
       } catch (err) {
         console.error(err);
         setError("Failed to load orders");
@@ -220,13 +249,8 @@ const MyPurchaseServices = () => {
       }
     };
 
-    fetchOrders();
+    fetchData();
   }, [user]);
-
-  // ---------------- PAYMENT ----------------
-  const handlePayment = (id: string) => {
-    alert(`Payment for order ${id}`);
-  };
 
   // ---------------- LOADING ----------------
   if (loading) {
@@ -305,7 +329,7 @@ const MyPurchaseServices = () => {
               </p>
 
               <div className="flex gap-2">
-                {/* 💬 CHAT BUTTON (WITH NOTIFICATION DOT) */}
+                {/* 💬 CHAT BUTTON (NEW LOGIC) */}
                 <button
                   onClick={() =>
                     navigate(`/chat/${order._id}`)
@@ -314,10 +338,10 @@ const MyPurchaseServices = () => {
                 >
                   Chat
 
-                  {/* 🔴 unread dot (future backend ready) */}
-                  {order.unreadCount && order.unreadCount > 0 && (
-                    <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] px-1 rounded-full">
-                      {order.unreadCount}
+                  {/* 🔴 ONLY FROM NOTIFICATIONS */}
+                  {order.unread && (
+                    <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] px-1 rounded-full animate-pulse">
+                      New
                     </span>
                   )}
                 </button>
@@ -325,7 +349,9 @@ const MyPurchaseServices = () => {
                 {/* 💳 PAYMENT BUTTON */}
                 {order.paymentStatus !== "paid" && (
                   <button
-                    onClick={() => handlePayment(order._id)}
+                    onClick={() =>
+                      alert(`Payment for ${order._id}`)
+                    }
                     className="px-4 py-2 bg-green-600 text-white rounded-lg text-sm"
                   >
                     Pay Now

@@ -228,7 +228,6 @@
 
 // export default ManageSellerOrders;
 
-
 import { useEffect, useState } from "react";
 import axiosInstance from "@/UseAxios/axios";
 import { useAuth } from "@/AuthContex/UseAuth";
@@ -245,9 +244,12 @@ type Order = {
   status: string;
   paymentStatus: string;
   createdAt: string;
+};
 
-  // 🔥 backend should send this
-  unreadCount?: number;
+type Notification = {
+  _id: string;
+  orderId: string;
+  isRead: boolean;
 };
 
 const ManageSellerOrders = () => {
@@ -255,21 +257,23 @@ const ManageSellerOrders = () => {
   const navigate = useNavigate();
 
   const [orders, setOrders] = useState<Order[]>([]);
+  const [notifications, setNotifications] = useState<Notification[]>([]);
   const [loading, setLoading] = useState(true);
   const [updatingId, setUpdatingId] = useState<string | null>(null);
 
-  // ---------------- FETCH ORDERS ----------------
+  // ---------------- FETCH ORDERS + NOTIFICATIONS ----------------
   useEffect(() => {
-    const fetchOrders = async () => {
+    const fetchData = async () => {
       try {
         if (!user?.uid) return;
 
-        const res = await axiosInstance.get(
-          `/orders/seller/${user.uid}`
-        );
+        const [orderRes, notifRes] = await Promise.all([
+          axiosInstance.get(`/orders/seller/${user.uid}`),
+          axiosInstance.get(`/notifications/${user.uid}`), // 🔥 IMPORTANT
+        ]);
 
-        // backend should already include unreadCount
-        setOrders(res.data.data);
+        setOrders(orderRes.data.data || []);
+        setNotifications(notifRes.data.data || []);
       } catch (error) {
         console.error(error);
       } finally {
@@ -277,8 +281,15 @@ const ManageSellerOrders = () => {
       }
     };
 
-    fetchOrders();
+    fetchData();
   }, [user]);
+
+  // ---------------- GET UNREAD COUNT ----------------
+  const getUnreadCount = (orderId: string) => {
+    return notifications.filter(
+      (n) => n.orderId === orderId && n.isRead === false
+    ).length;
+  };
 
   // ---------------- UPDATE STATUS ----------------
   const updateStatus = async (id: string, status: string) => {
@@ -288,19 +299,16 @@ const ManageSellerOrders = () => {
       await axiosInstance.patch(`/orders/${id}`, { status });
 
       setOrders((prev) =>
-        prev.map((o) =>
-          o._id === id ? { ...o, status } : o
-        )
+        prev.map((o) => (o._id === id ? { ...o, status } : o))
       );
     } catch (error) {
       console.error(error);
-      alert("Failed to update order");
     } finally {
       setUpdatingId(null);
     }
   };
 
-  // ---------------- STATUS COLORS ----------------
+  // ---------------- STATUS COLOR ----------------
   const statusColor = (status: string) => {
     switch (status) {
       case "pending":
@@ -325,15 +333,6 @@ const ManageSellerOrders = () => {
     );
   }
 
-  // ---------------- EMPTY ----------------
-  if (orders.length === 0) {
-    return (
-      <div className="text-center py-20 text-gray-500">
-        No orders received yet
-      </div>
-    );
-  }
-
   return (
     <div className="max-w-6xl mx-auto px-4 py-10">
       <h1 className="text-3xl font-bold mb-8 text-center">
@@ -341,136 +340,127 @@ const ManageSellerOrders = () => {
       </h1>
 
       <div className="grid md:grid-cols-2 gap-6">
-        {orders.map((order) => (
-          <div
-            key={order._id}
-            className="relative bg-white border rounded-2xl p-5 shadow-sm hover:shadow-md transition"
-          >
-            {/* 🔴 UNREAD BADGE */}
-            {order.unreadCount && order.unreadCount > 0 && (
-              <span className="absolute top-3 right-3 bg-red-500 text-white text-xs px-2 py-1 rounded-full">
-                {order.unreadCount} new
-              </span>
-            )}
+        {orders.map((order) => {
+          const unread = getUnreadCount(order._id);
 
-            {/* HEADER */}
-            <div className="flex justify-between items-start">
-              <div>
-                <h2 className="text-lg font-semibold">
-                  {order.gigTitle}
-                </h2>
-                <p className="text-sm text-gray-500">
-                  Buyer: {order.buyerName}
-                </p>
+          return (
+            <div
+              key={order._id}
+              className="relative bg-white border rounded-2xl p-5 shadow-sm hover:shadow-md transition"
+            >
+              {/* 🔴 UNREAD BADGE */}
+              {unread > 0 && (
+                <span className="absolute top-3 right-3 bg-red-500 text-white text-xs px-2 py-1 rounded-full animate-pulse">
+                  {unread} new
+                </span>
+              )}
+
+              {/* HEADER */}
+              <div className="flex justify-between items-start">
+                <div>
+                  <h2 className="text-lg font-semibold">
+                    {order.gigTitle}
+                  </h2>
+                  <p className="text-sm text-gray-500">
+                    Buyer: {order.buyerName}
+                  </p>
+                </div>
+
+                <span
+                  className={`px-3 py-1 rounded-full text-xs font-medium ${statusColor(
+                    order.status
+                  )}`}
+                >
+                  {order.status}
+                </span>
               </div>
 
-              <span
-                className={`px-3 py-1 rounded-full text-xs font-medium ${statusColor(
-                  order.status
-                )}`}
-              >
-                {order.status}
-              </span>
+              {/* INFO */}
+              <div className="mt-4 text-sm text-gray-600 space-y-1">
+                <p>💰 ${order.price}</p>
+                <p>
+                  📅 {new Date(order.createdAt).toLocaleDateString()}
+                </p>
+                <p>💳 {order.paymentStatus}</p>
+              </div>
+
+              {/* ACTIONS */}
+              <div className="mt-5 flex gap-2 flex-wrap">
+
+                {order.status === "pending" && (
+                  <button
+                    onClick={() => updateStatus(order._id, "accepted")}
+                    className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm"
+                  >
+                    Accept
+                  </button>
+                )}
+
+                {order.status === "accepted" && (
+                  <>
+                    <button
+                      onClick={() =>
+                        updateStatus(order._id, "in_progress")
+                      }
+                      className="px-4 py-2 bg-purple-600 text-white rounded-lg text-sm"
+                    >
+                      Start Work
+                    </button>
+
+                    <button
+                      onClick={() =>
+                        navigate(`/chat/${order._id}`)
+                      }
+                      className="relative px-4 py-2 bg-green-600 text-white rounded-lg text-sm flex items-center gap-2"
+                    >
+                      💬 Chat
+
+                      {unread > 0 && (
+                        <span className="bg-red-500 text-xs px-2 py-0.5 rounded-full animate-pulse">
+                          {unread}
+                        </span>
+                      )}
+                    </button>
+                  </>
+                )}
+
+                {order.status === "in_progress" && (
+                  <>
+                    <button
+                      onClick={() =>
+                        updateStatus(order._id, "completed")
+                      }
+                      className="px-4 py-2 bg-green-600 text-white rounded-lg text-sm"
+                    >
+                      Complete
+                    </button>
+
+                    <button
+                      onClick={() =>
+                        navigate(`/chat/${order._id}`)
+                      }
+                      className="relative px-4 py-2 bg-green-500 text-white rounded-lg text-sm flex items-center gap-2"
+                    >
+                      💬 Chat
+
+                      {unread > 0 && (
+                        <span className="bg-red-500 text-xs px-2 py-0.5 rounded-full animate-pulse">
+                          {unread}
+                        </span>
+                      )}
+                    </button>
+                  </>
+                )}
+
+                {updatingId === order._id && (
+                  <span className="text-sm text-gray-500">
+                    Updating...
+                  </span>
+                )}
+              </div>
             </div>
-
-            {/* INFO */}
-            <div className="mt-4 space-y-2 text-sm text-gray-600">
-              <p>
-                💰 Price:{" "}
-                <span className="font-semibold">
-                  ${order.price}
-                </span>
-              </p>
-
-              <p>
-                📅 Date:{" "}
-                {new Date(order.createdAt).toLocaleDateString()}
-              </p>
-
-              <p>💳 Payment: {order.paymentStatus}</p>
-            </div>
-
-            {/* ACTIONS */}
-            <div className="mt-5 flex flex-wrap gap-2">
-
-              {/* ACCEPT */}
-              {order.status === "pending" && (
-                <button
-                  onClick={() =>
-                    updateStatus(order._id, "accepted")
-                  }
-                  className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm"
-                >
-                  Accept Order
-                </button>
-              )}
-
-              {/* ACCEPTED */}
-              {order.status === "accepted" && (
-                <>
-                  <button
-                    onClick={() =>
-                      updateStatus(order._id, "in_progress")
-                    }
-                    className="px-4 py-2 bg-purple-600 text-white rounded-lg text-sm"
-                  >
-                    Start Work
-                  </button>
-
-                  <button
-                    onClick={() =>
-                      navigate(`/chat/${order._id}`)
-                    }
-                    className="relative px-4 py-2 bg-green-600 text-white rounded-lg text-sm"
-                  >
-                    Chat
-
-                    {order.unreadCount! > 0 && (
-                      <span className="ml-2 bg-red-500 text-white text-xs px-2 rounded-full">
-                        {order.unreadCount}
-                      </span>
-                    )}
-                  </button>
-                </>
-              )}
-
-              {/* IN PROGRESS */}
-              {order.status === "in_progress" && (
-                <>
-                  <button
-                    onClick={() =>
-                      updateStatus(order._id, "completed")
-                    }
-                    className="px-4 py-2 bg-green-600 text-white rounded-lg text-sm"
-                  >
-                    Complete
-                  </button>
-
-                  <button
-                    onClick={() =>
-                      navigate(`/chat/${order._id}`)
-                    }
-                    className="relative px-4 py-2 bg-green-500 text-white rounded-lg text-sm"
-                  >
-                    Chat
-
-                    {order.unreadCount! > 0 && (
-                      <span className="ml-2 bg-red-500 text-white text-xs px-2 rounded-full">
-                        {order.unreadCount}
-                      </span>
-                    )}
-                  </button>
-                </>
-              )}
-
-              {updatingId === order._id && (
-                <span className="text-sm text-gray-500">
-                  Updating...
-                </span>
-              )}
-            </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
     </div>
   );
