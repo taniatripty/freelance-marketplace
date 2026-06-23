@@ -59,17 +59,21 @@ const MyPurchaseServices = () => {
        
 
         // 🔥 map unread status per order using notifications ONLY
+       
         const enrichedOrders = ordersData.map((order: Order) => {
-          const hasUnread = notificationsData.some(
-            (n: Notification) =>
-              n.orderId === order._id && n.isRead === false
-          );
+  const hasUnread = notificationsData.some(
+    (n: Notification) =>
+      n.orderId === order._id &&
+      n.isRead === false &&
+      n.type=="message"
+      // ✅ IMPORTANT FIX
+  );
 
-          return {
-            ...order,
-            unread: hasUnread,
-          };
-        });
+  return {
+    ...order,
+    unread: hasUnread,
+  };
+});
 
         setOrders(enrichedOrders);
       } catch (err) {

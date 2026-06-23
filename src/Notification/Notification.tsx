@@ -55,7 +55,7 @@ const NotificationBell = ({ userId }: { userId: string }) => {
 
       // navigate based on type
       if (notif.orderId) {
-        navigate(`/chat/${notif.orderId}`);
+        navigate(`/orders/${notif.orderId}`);
       }
     } catch (error) {
       console.error(error);
