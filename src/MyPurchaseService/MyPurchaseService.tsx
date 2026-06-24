@@ -1,13 +1,11 @@
-
-
-
-import { useEffect, useState } from "react";
-import axiosInstance from "@/UseAxios/axios";
 import { useAuth } from "@/AuthContex/UseAuth";
+import axiosInstance from "@/UseAxios/axios";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 
 type Order = {
   _id: string;
+  gigId:string;
   gigTitle: string;
   sellerName: string;
   price: number;
@@ -21,6 +19,7 @@ type Order = {
 type Notification = {
   _id: string;
   userId: string;
+  gigId:string;
   type: string;
   title: string;
   message: string;
@@ -50,30 +49,27 @@ const MyPurchaseServices = () => {
           axiosInstance.get(`/notifications/${user.uid}`),
         ]);
 
-
         const ordersData = orderRes.data.data;
         const notificationsData = notifRes.data.data;
 
-
         setNotifications(notificationsData);
-       
 
         // 🔥 map unread status per order using notifications ONLY
-       
-        const enrichedOrders = ordersData.map((order: Order) => {
-  const hasUnread = notificationsData.some(
-    (n: Notification) =>
-      n.orderId === order._id &&
-      n.isRead === false &&
-      n.type=="message"
-      // ✅ IMPORTANT FIX
-  );
 
-  return {
-    ...order,
-    unread: hasUnread,
-  };
-});
+        const enrichedOrders = ordersData.map((order: Order) => {
+          const hasUnread = notificationsData.some(
+            (n: Notification) =>
+              n.orderId === order._id &&
+              n.isRead === false &&
+              n.type == "message",
+            // ✅ IMPORTANT FIX
+          );
+
+          return {
+            ...order,
+            unread: hasUnread,
+          };
+        });
 
         setOrders(enrichedOrders);
       } catch (err) {
@@ -90,46 +86,36 @@ const MyPurchaseServices = () => {
   // ---------------- LOADING ----------------
   if (loading) {
     return (
-      <div className="text-center py-20 text-gray-500">
-        Loading orders...
-      </div>
+      <div className="text-center py-20 text-gray-500">Loading orders...</div>
     );
   }
 
   // ---------------- ERROR ----------------
   if (error) {
-    return (
-      <div className="text-center py-20 text-red-500">
-        {error}
-      </div>
-    );
+    return <div className="text-center py-20 text-red-500">{error}</div>;
   }
 
   // ---------------- EMPTY ----------------
   if (orders.length === 0) {
     return (
-      <div className="text-center py-20 text-gray-500">
-        No orders found
-      </div>
+      <div className="text-center py-20 text-gray-500">No orders found</div>
     );
   }
 
-   const handlePayment = (order: Order) => {
-  navigate(`/payment/${order._id}`, {
-    state: {
-      orderId: order._id,
-      gigTitle: order.gigTitle,
-      sellerName: order.sellerName,
-      amount: order.price,
-    },
-  });
-};
+  const handlePayment = (order: Order) => {
+    navigate(`/payment/${order._id}`, {
+      state: {
+        orderId: order._id,
+        gigTitle: order.gigTitle,
+        sellerName: order.sellerName,
+        amount: order.price,
+      },
+    });
+  };
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-10">
-      <h1 className="text-3xl font-bold text-center mb-8">
-        My Orders
-      </h1>
+      <h1 className="text-3xl font-bold text-center mb-8">My Orders</h1>
 
       <div className="space-y-4">
         {orders.map((order) => (
@@ -139,9 +125,7 @@ const MyPurchaseServices = () => {
           >
             {/* LEFT SIDE */}
             <div>
-              <h2 className="font-semibold text-lg">
-                {order.gigTitle}
-              </h2>
+              <h2 className="font-semibold text-lg">{order.gigTitle}</h2>
 
               <p className="text-sm text-gray-500">
                 Seller: {order.sellerName}
@@ -170,20 +154,15 @@ const MyPurchaseServices = () => {
 
             {/* RIGHT SIDE */}
             <div className="flex flex-col gap-2 items-start md:items-end">
-              <p className="font-bold text-green-600 text-lg">
-                ${order.price}
-              </p>
+              <p className="font-bold text-green-600 text-lg">${order.price}</p>
 
               <div className="flex gap-2">
                 {/* 💬 CHAT BUTTON (NEW LOGIC) */}
                 <button
-                  onClick={() =>
-                    navigate(`/chat/${order._id}`)
-                  }
+                  onClick={() => navigate(`/chat/${order._id}`)}
                   className="relative px-4 py-2 bg-blue-600 text-white rounded-lg text-sm"
                 >
                   Chat
-
                   {/* 🔴 ONLY FROM NOTIFICATIONS */}
                   {order.unread && (
                     <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] px-1 rounded-full animate-pulse">
@@ -195,12 +174,25 @@ const MyPurchaseServices = () => {
                 {/* 💳 PAYMENT BUTTON */}
                 {order.paymentStatus !== "paid" && (
                   <button
-  onClick={() =>handlePayment (order)}
-  className="px-4 py-2 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-lg text-sm font-medium hover:scale-105 transition-all duration-200 flex items-center gap-2"
->
-  💳 Pay Now
-</button>
+                    onClick={() => handlePayment(order)}
+                    className="px-4 py-2 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-lg text-sm font-medium hover:scale-105 transition-all duration-200 flex items-center gap-2"
+                  >
+                    💳 Pay Now
+                  </button>
                 )}
+
+                {order.status === "completed" &&
+                  order.paymentStatus === "paid" && (
+                    <button
+                      onClick={() =>
+                         navigate(`/review/${order._id}`
+                        )
+                      }
+                      className="px-4 py-2 bg-yellow-500 hover:bg-yellow-600 text-white rounded-lg text-sm font-medium"
+                    >
+                      ⭐ Review
+                    </button>
+                  )}
               </div>
 
               <span className="text-xs text-gray-400">

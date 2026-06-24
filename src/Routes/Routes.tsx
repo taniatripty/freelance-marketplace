@@ -19,6 +19,7 @@ import ManageSellerOrders from "@/ManageSellerOrder/ManageSellerOrder";
 import Chat from "@/Chat/Chat";
 import PaymentPage from "@/PaymentPage/PaymentPage";
 import OrderPage from "@/OrdersPage/OrderPage";
+import CreateReview from "@/CreateReviews/CreateReviews";
 
 
 export const router = createBrowserRouter([
@@ -90,6 +91,10 @@ export const router = createBrowserRouter([
     {
      path:"/orders/:id",
      element:<OrderPage></OrderPage>
+    },
+    {
+      path:"review/:orderId",
+      element:<CreateReview></CreateReview>
     },
     {
       path:'/login',
