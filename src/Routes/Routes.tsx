@@ -20,6 +20,8 @@ import Chat from "@/Chat/Chat";
 import PaymentPage from "@/PaymentPage/PaymentPage";
 import OrderPage from "@/OrdersPage/OrderPage";
 import CreateReview from "@/CreateReviews/CreateReviews";
+import DashboardLayout from "@/Dashboard/Dashboard";
+import DashboardHome from "@/Dashboard/DashboardHome/DashboradHome";
 
 
 export const router = createBrowserRouter([
@@ -107,4 +109,15 @@ export const router = createBrowserRouter([
 
    ]
   },
+  {
+    path:"/dashboard",
+    element:<DashboardLayout></DashboardLayout>,
+    children:[
+      {
+        index:true,
+        element:<DashboardHome></DashboardHome>
+      }
+    ]
+
+  }
 ]);
