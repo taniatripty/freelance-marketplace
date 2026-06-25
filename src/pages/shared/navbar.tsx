@@ -199,17 +199,17 @@ const Navbar = () => {
         Become a Freelancer
       </NavLink>
 
-      <NavLink to="/createGig" className={linkClass}>
-        Create Gigs
-      </NavLink>
+      
 
       <NavLink to="/mypurchase" className={linkClass}>
         My Purchase Services
       </NavLink>
 
-      <NavLink to="/managesellerOrder" className={linkClass}>
-        Manage Seller Orders
+      
+      <NavLink to="/dashboard" className={linkClass}>
+        Dashboard
       </NavLink>
+      
 
      
     </>

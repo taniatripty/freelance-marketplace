@@ -22,6 +22,9 @@ import OrderPage from "@/OrdersPage/OrderPage";
 import CreateReview from "@/CreateReviews/CreateReviews";
 import DashboardLayout from "@/Dashboard/Dashboard";
 import DashboardHome from "@/Dashboard/DashboardHome/DashboradHome";
+import MyProfile from "@/Dashboard/MyProfile/MyProfile";
+import MyGigs from "@/MyAllGigs/MyAllGigs";
+import MyGigDetails from "@/MyAllGigs/MyGigDetails";
 
 
 export const router = createBrowserRouter([
@@ -57,18 +60,12 @@ export const router = createBrowserRouter([
       path:"/categorytable",
       element:<CategoriesTable></CategoriesTable>
     },
-    {
-      path:"/createGig",
-      element:<CreateGig></CreateGig>
-    },
+    
     {
       path:"/allgigs",
       element:<AllGigs></AllGigs>
     },
-    {
-      path:"/gigs/:id",
-      element:<GigDetails></GigDetails>
-    },
+    
     {
       path:"/checkout/:id",
       element:<Checkout></Checkout>
@@ -77,11 +74,7 @@ export const router = createBrowserRouter([
       path:"/mypurchase",
       element:<MyPurchaseServices></MyPurchaseServices>
     },
-    {
-     path:"/managesellerOrder",
-     element:<ManageSellerOrders></ManageSellerOrders>
-
-    },
+    
     {
       path:"/chat/:orderId",
       element:<Chat></Chat>
@@ -116,7 +109,29 @@ export const router = createBrowserRouter([
       {
         index:true,
         element:<DashboardHome></DashboardHome>
-      }
+      },
+      {
+        path:"profile",
+        element:<MyProfile></MyProfile>
+      },
+      {
+      path:"createGig",
+      element:<CreateGig></CreateGig>
+    },
+     {
+      path:"myallgigs",
+      element:<MyGigs></MyGigs>
+    },
+    {
+      path:"gig/:id",
+      element:<MyGigDetails></MyGigDetails>
+    },
+      {
+     path:"managesellerOrder",
+     element:<ManageSellerOrders></ManageSellerOrders>
+
+    },
+
     ]
 
   }

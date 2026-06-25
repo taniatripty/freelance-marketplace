@@ -30,7 +30,7 @@ const DashboardHome = () => {
       </div>
 
       {/* BUYER DASHBOARD */}
-      {currentUser?.role === "buyer" && (
+      {currentUser?.role === "client" && (
         <>
           <h2 className="text-xl font-semibold mb-4">
             Buyer Overview
@@ -61,7 +61,7 @@ const DashboardHome = () => {
       )}
 
       {/* SELLER DASHBOARD */}
-      {currentUser?.role === "seller" && (
+      {currentUser?.role === "freelancer" && (
         <>
           <h2 className="text-xl font-semibold mb-4">
             Seller Overview
