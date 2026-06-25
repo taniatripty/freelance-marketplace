@@ -1,8 +1,6 @@
-
-
-import { useEffect, useState } from "react";
-import axiosInstance from "@/UseAxios/axios";
 import { useAuth } from "@/AuthContex/UseAuth";
+import axiosInstance from "@/UseAxios/axios";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 
 type Order = {
@@ -61,9 +59,7 @@ const ManageSellerOrders = () => {
   const getUnreadMessageCount = (orderId: string) => {
     return notifications.filter(
       (n) =>
-        n.orderId === orderId &&
-        n.isRead === false &&
-        n.type === "message"
+        n.orderId === orderId && n.isRead === false && n.type === "message",
     ).length;
   };
 
@@ -75,7 +71,7 @@ const ManageSellerOrders = () => {
       await axiosInstance.patch(`/orders/${id}`, { status });
 
       setOrders((prev) =>
-        prev.map((o) => (o._id === id ? { ...o, status } : o))
+        prev.map((o) => (o._id === id ? { ...o, status } : o)),
       );
     } catch (error) {
       console.error(error);
@@ -84,17 +80,76 @@ const ManageSellerOrders = () => {
     }
   };
 
+  // ---------------- SELLER CANCEL ORDER ----------------
+  const cancelOrder = async (id: string) => {
+    const confirmCancel = window.confirm(
+      "Are you sure you want to cancel this order?",
+    );
+
+    if (!confirmCancel) return;
+
+    try {
+      setUpdatingId(id);
+
+      await axiosInstance.patch(`/orders/seller-cancel/${id}`, {
+        sellerId: user?.uid,
+      });
+
+      setOrders((prev) =>
+        prev.map((order) =>
+          order._id === id
+            ? {
+                ...order,
+                status: "cancelled_by_seller",
+              }
+            : order,
+        ),
+      );
+
+      alert("Order cancelled successfully");
+    } catch (error: any) {
+      console.error(error);
+
+      alert(error?.response?.data?.message || "Failed to cancel order");
+    } finally {
+      setUpdatingId(null);
+    }
+  };
+
   // ---------------- STATUS COLOR ----------------
+  // const statusColor = (status: string) => {
+  //   switch (status) {
+  //     case "pending":
+  //       return "bg-yellow-100 text-yellow-700";
+  //     case "accepted":
+  //       return "bg-blue-100 text-blue-700";
+  //     case "in_progress":
+  //       return "bg-purple-100 text-purple-700";
+  //     case "completed":
+  //       return "bg-green-100 text-green-700";
+  //     default:
+  //       return "bg-gray-100 text-gray-600";
+  //   }
+  // };
+
   const statusColor = (status: string) => {
     switch (status) {
       case "pending":
         return "bg-yellow-100 text-yellow-700";
+
       case "accepted":
         return "bg-blue-100 text-blue-700";
+
       case "in_progress":
         return "bg-purple-100 text-purple-700";
+
       case "completed":
         return "bg-green-100 text-green-700";
+
+      case "cancelled_by_buyer":
+      case "cancelled_by_seller":
+        return "bg-red-100 text-red-700";
+
       default:
         return "bg-gray-100 text-gray-600";
     }
@@ -102,23 +157,17 @@ const ManageSellerOrders = () => {
 
   // ---------------- CHAT CONDITION ----------------
   const canChat = (status: string) =>
-    status === "accepted" ||
-    status === "in_progress" ||
-    status === "completed";
+    status === "accepted" || status === "in_progress" || status === "completed";
 
   if (loading) {
     return (
-      <div className="text-center py-20 text-gray-500">
-        Loading Orders...
-      </div>
+      <div className="text-center py-20 text-gray-500">Loading Orders...</div>
     );
   }
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-10">
-      <h1 className="text-3xl font-bold mb-8 text-center">
-        Manage Orders
-      </h1>
+      <h1 className="text-3xl font-bold mb-8 text-center">Manage Orders</h1>
 
       <div className="grid md:grid-cols-2 gap-6">
         {orders.map((order) => {
@@ -132,9 +181,7 @@ const ManageSellerOrders = () => {
               {/* HEADER */}
               <div className="flex justify-between">
                 <div>
-                  <h2 className="text-lg font-semibold">
-                    {order.gigTitle}
-                  </h2>
+                  <h2 className="text-lg font-semibold">{order.gigTitle}</h2>
                   <p className="text-sm text-gray-500">
                     Buyer: {order.buyerName}
                   </p>
@@ -142,7 +189,7 @@ const ManageSellerOrders = () => {
 
                 <span
                   className={`px-3 py-1 rounded-full text-xs ${statusColor(
-                    order.status
+                    order.status,
                   )}`}
                 >
                   {order.status}
@@ -152,21 +199,15 @@ const ManageSellerOrders = () => {
               {/* INFO */}
               <div className="mt-4 text-sm">
                 <p>💰 ${order.price}</p>
-                <p>
-                  📅{" "}
-                  {new Date(order.createdAt).toLocaleDateString()}
-                </p>
+                <p>📅 {new Date(order.createdAt).toLocaleDateString()}</p>
               </div>
 
               {/* ACTIONS */}
               <div className="mt-5 flex gap-2 flex-wrap">
-
                 {/* ACCEPT */}
                 {order.status === "pending" && (
                   <button
-                    onClick={() =>
-                      updateStatus(order._id, "accepted")
-                    }
+                    onClick={() => updateStatus(order._id, "accepted")}
                     className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm"
                   >
                     Accept
@@ -176,9 +217,7 @@ const ManageSellerOrders = () => {
                 {/* START WORK */}
                 {order.status === "accepted" && (
                   <button
-                    onClick={() =>
-                      updateStatus(order._id, "in_progress")
-                    }
+                    onClick={() => updateStatus(order._id, "in_progress")}
                     className="px-4 py-2 bg-purple-600 text-white rounded-lg text-sm"
                   >
                     Start Work
@@ -188,9 +227,7 @@ const ManageSellerOrders = () => {
                 {/* COMPLETE */}
                 {order.status === "in_progress" && (
                   <button
-                    onClick={() =>
-                      updateStatus(order._id, "completed")
-                    }
+                    onClick={() => updateStatus(order._id, "completed")}
                     className="px-4 py-2 bg-green-600 text-white rounded-lg text-sm"
                   >
                     Complete
@@ -200,13 +237,10 @@ const ManageSellerOrders = () => {
                 {/* 💬 CHAT BUTTON (FIXED) */}
                 {canChat(order.status) && (
                   <button
-                    onClick={() =>
-                      navigate(`/chat/${order._id}`)
-                    }
+                    onClick={() => navigate(`/chat/${order._id}`)}
                     className="relative px-4 py-2 bg-green-600 text-white rounded-lg text-sm flex items-center gap-2"
                   >
                     💬 Chat
-
                     {/* 🔥 ONLY MESSAGE TYPE UNREAD */}
                     {unread > 0 && (
                       <span className="bg-red-500 text-xs px-2 py-0.5 rounded-full animate-pulse">
@@ -215,11 +249,18 @@ const ManageSellerOrders = () => {
                     )}
                   </button>
                 )}
-
+                {/* CANCEL ORDER */}
+                {(order.status === "pending" || order.status === "accepted") &&
+                  order.paymentStatus !== "paid" && (
+                    <button
+                      onClick={() => cancelOrder(order._id)}
+                      className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg text-sm"
+                    >
+                      Cancel Order
+                    </button>
+                  )}
                 {updatingId === order._id && (
-                  <span className="text-sm text-gray-500">
-                    Updating...
-                  </span>
+                  <span className="text-sm text-gray-500">Updating...</span>
                 )}
               </div>
             </div>
