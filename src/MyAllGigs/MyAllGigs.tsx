@@ -179,7 +179,7 @@ const MyGigs = () => {
                 <div className="flex gap-2 mt-5">
                   <button
                     onClick={() =>
-                      navigate(`gig/${gig._id}`)
+                      navigate(`/dashboard/gig/${gig._id}`)
                     }
                     className="flex-1 border rounded-lg py-2"
                   >

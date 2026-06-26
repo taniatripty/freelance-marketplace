@@ -14,7 +14,8 @@ import {
   Users,
   FolderKanban,
   Package,
-  LogOut,
+  LogOut
+ 
 } from "lucide-react";
 
 const DashboardSidebar = () => {
@@ -76,8 +77,11 @@ const DashboardSidebar = () => {
         {/* CLIENT */}
         {currentUser?.role === "client" && (
           <>
+
+          
+
             <NavLink
-              to="/dashboard/purchases"
+              to="/dashboard/mypurchase"
               className={navClass}
             >
               <ShoppingBag size={18} />
