@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import axiosInstance from "@/UseAxios/axios";
 import { useAuth } from "@/AuthContex/UseAuth";
 import { useNavigate } from "react-router";
+import toast from "react-hot-toast";
 
 type Gig = {
   _id: string;
@@ -45,22 +46,34 @@ const MyGigs = () => {
   }, [user]);
 
   const handleDelete = async (id: string) => {
-    const confirmDelete = window.confirm(
-      "Are you sure you want to delete this gig?"
-    );
+  const confirmDelete = window.confirm(
+    "Are you sure you want to delete this gig?\n\nExisting orders will not be affected, but new buyers won't be able to purchase this gig."
+  );
 
-    if (!confirmDelete) return;
+  if (!confirmDelete) return;
 
-    try {
-      await axiosInstance.delete(`/gigs/${id}`);
+  try {
+    const res = await axiosInstance.delete(`/gigs/delete/${id}`);
 
+    if (res.data.success) {
       setGigs((prev) =>
-        prev.filter((gig) => gig._id !== id)
+        prev.map((gig) =>
+          gig._id === id
+            ? {
+                ...gig,
+                status: "deleted",
+              }
+            : gig
+        )
       );
-    } catch (error) {
-      console.error(error);
+
+      toast.success("Gig deleted successfully.");
     }
-  };
+  } catch (error) {
+    console.error(error);
+    toast.error("Failed to delete gig.");
+  }
+};
 
   if (loading) {
     return (
@@ -73,13 +86,13 @@ const MyGigs = () => {
   return (
     <div className="max-w-7xl mx-auto p-6">
       <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-bold">
+        <h1 className="text-3xl text-indigo-600 font-bold">
           My Gigs
         </h1>
 
         <button
           onClick={() =>
-            navigate("/dashboard/add-gig")
+            navigate("/dashboard/createGig")
           }
           className="bg-indigo-600 text-white px-5 py-2 rounded-lg"
         >
@@ -164,7 +177,7 @@ const MyGigs = () => {
                       Status
                     </p>
 
-                    <span
+                    {/* <span
                       className={`text-xs px-2 py-1 rounded-full ${
                         gig.status === "active"
                           ? "bg-green-100 text-green-700"
@@ -172,7 +185,19 @@ const MyGigs = () => {
                       }`}
                     >
                       {gig.status}
-                    </span>
+                    </span> */}
+
+                    <span
+  className={`text-xs px-2 py-1 rounded-full ${
+    gig.status === "active"
+      ? "bg-green-100 text-green-700"
+      : gig.status === "deleted"
+      ? "bg-gray-100 text-gray-700"
+      : "bg-red-100 text-red-700"
+  }`}
+>
+  {gig.status}
+</span>
                   </div>
                 </div>
 
@@ -197,14 +222,22 @@ const MyGigs = () => {
                     Edit
                   </button>
 
-                  <button
+                  {/* <button
                     onClick={() =>
                       handleDelete(gig._id)
                     }
                     className="flex-1 bg-red-600 text-white rounded-lg py-2"
                   >
                     Delete
-                  </button>
+                  </button> */}
+
+                   <button
+    disabled={gig.status === "deleted"}
+    onClick={() => handleDelete(gig._id)}
+    className="flex-1 bg-red-600 text-white rounded-lg py-2 disabled:bg-gray-300 disabled:cursor-not-allowed"
+  >
+    {gig.status === "deleted" ? "Deleted" : "Delete"}
+  </button>
                 </div>
 
                 <p className="text-xs text-gray-400 mt-3">

@@ -135,23 +135,23 @@ const ManageSellerOrders = () => {
   const statusColor = (status: string) => {
     switch (status) {
       case "pending":
-        return "bg-yellow-100 text-yellow-700";
+        return " text-yellow-700";
 
       case "accepted":
-        return "bg-blue-100 text-blue-700";
+        return " text-blue-700";
 
       case "in_progress":
-        return "bg-purple-100 text-purple-700";
+        return " text-purple-700";
 
       case "completed":
-        return "bg-green-100 text-green-700";
+        return "text-green-700";
 
       case "cancelled_by_buyer":
       case "cancelled_by_seller":
-        return "bg-red-100 text-red-700";
+        return " text-red-700";
 
       default:
-        return "bg-gray-100 text-gray-600";
+        return " text-gray-600";
     }
   };
 
@@ -188,7 +188,7 @@ const ManageSellerOrders = () => {
                 </div>
 
                 <span
-                  className={`px-3 py-1 rounded-full text-xs ${statusColor(
+                  className={` text-xs ${statusColor(
                     order.status,
                   )}`}
                 >
@@ -208,7 +208,7 @@ const ManageSellerOrders = () => {
                 {order.status === "pending" && (
                   <button
                     onClick={() => updateStatus(order._id, "accepted")}
-                    className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm"
+                    className="px-4 py-2 bg-blue-600 text-white  text-sm"
                   >
                     Accept
                   </button>
@@ -218,7 +218,7 @@ const ManageSellerOrders = () => {
                 {order.status === "accepted" && (
                   <button
                     onClick={() => updateStatus(order._id, "in_progress")}
-                    className="px-4 py-2 bg-purple-600 text-white rounded-lg text-sm"
+                    className="px-4 py-2 bg-purple-600 text-white  text-sm"
                   >
                     Start Work
                   </button>
@@ -228,7 +228,7 @@ const ManageSellerOrders = () => {
                 {order.status === "in_progress" && (
                   <button
                     onClick={() => updateStatus(order._id, "completed")}
-                    className="px-4 py-2 bg-green-600 text-white rounded-lg text-sm"
+                    className="px-4 py-2 bg-green-600 text-white text-sm"
                   >
                     Complete
                   </button>

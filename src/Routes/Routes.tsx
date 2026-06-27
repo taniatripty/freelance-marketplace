@@ -23,9 +23,10 @@ import CreateReview from "@/CreateReviews/CreateReviews";
 import DashboardLayout from "@/Dashboard/Dashboard";
 import DashboardHome from "@/Dashboard/DashboardHome/DashboradHome";
 import MyProfile from "@/Dashboard/MyProfile/MyProfile";
-import MyGigs from "@/MyAllGigs/MyAllGigs";
+import MyGigs from "@/MyGigs/MyAllGigs";
 import AllFreelancers from "@/pages/AllFreelancer/AllFreelancers";
 import PrivateRoute from "./privateRoutes";
+import EditGig from "@/MyGigs/EditGigs/EditGigs";
 
 
 
@@ -138,6 +139,10 @@ export const router = createBrowserRouter([
      {
       path:"myallgigs",
       element:<MyGigs></MyGigs>
+    },
+    {
+      path:"edit-gig/:id",
+      element:<EditGig></EditGig>
     },
     {
       path:"gig/:id",
