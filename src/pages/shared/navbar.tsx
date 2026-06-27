@@ -27,7 +27,7 @@ const Navbar = () => {
       </NavLink>
 
       {/* Only Guest + Client */}
-      {currentUser?.role === "client" && (
+      {(!currentUser || currentUser?.role === "client") && (
         <NavLink to="/becomefreelancer" className={linkClass}>
           Become a Freelancer
         </NavLink>

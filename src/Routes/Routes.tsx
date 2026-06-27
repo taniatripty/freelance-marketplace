@@ -25,6 +25,7 @@ import DashboardHome from "@/Dashboard/DashboardHome/DashboradHome";
 import MyProfile from "@/Dashboard/MyProfile/MyProfile";
 import MyGigs from "@/MyAllGigs/MyAllGigs";
 import AllFreelancers from "@/pages/AllFreelancer/AllFreelancers";
+import PrivateRoute from "./privateRoutes";
 
 
 
@@ -49,7 +50,9 @@ export const router = createBrowserRouter([
     },
     {
       path:"/becomefreelancer",
-      element:<BecomeFreelancer></BecomeFreelancer>
+      element:<PrivateRoute>
+        <BecomeFreelancer></BecomeFreelancer>
+      </PrivateRoute>
     },
     {
       path:"/allfreelancer",

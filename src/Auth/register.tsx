@@ -1,16 +1,15 @@
-
-
-import React, { useState } from "react";
-import { Eye, EyeOff, Mail } from "lucide-react";
-import axiosInstance from "@/UseAxios/axios";
 import { useAuth } from "@/AuthContex/UseAuth";
-import { Link } from "react-router-dom";
+import useRedirect from "@/hooks/useRedirect";
+import axiosInstance from "@/UseAxios/axios";
 import axios from "axios";
-
+import { Eye, EyeOff, Mail } from "lucide-react";
+import React, { useState } from "react";
+import toast from "react-hot-toast";
+import { Link } from "react-router-dom";
 
 const Register: React.FC = () => {
   const { createuser, upadeteuser, Googlelogin } = useAuth();
-
+  const { redirect } = useRedirect();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [images, setImages] = useState<File[]>([]);
@@ -21,103 +20,93 @@ const Register: React.FC = () => {
   const [googleLoading, setGoogleLoading] = useState(false);
 
   const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] =
-    useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   // ---------------- UPLOAD IMAGE ----------------
 
   const uploadImage = async (): Promise<string> => {
-  if (images.length === 0) return "";
+    if (images.length === 0) return "";
 
-  const formData = new FormData();
+    const formData = new FormData();
 
-  formData.append("file", images[0]);
+    formData.append("file", images[0]);
 
-  formData.append(
-    "upload_preset",
-    import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET
-  );
+    formData.append(
+      "upload_preset",
+      import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET,
+    );
 
-  const res = await axios.post(
-    `https://api.cloudinary.com/v1_1/${
-      import.meta.env.VITE_CLOUDINARY_CLOUD_NAME
-    }/image/upload`,
-    formData
-  );
+    const res = await axios.post(
+      `https://api.cloudinary.com/v1_1/${
+        import.meta.env.VITE_CLOUDINARY_CLOUD_NAME
+      }/image/upload`,
+      formData,
+    );
 
-  console.log("Cloudinary Response:", res.data);
+    console.log("Cloudinary Response:", res.data);
 
-  return res.data.secure_url;
-};
- 
+    return res.data.secure_url;
+  };
 
   // ---------------- REGISTER ----------------
 
-  const handleRegister = async (
-    e: React.FormEvent<HTMLFormElement>
-  ) => {
+  const handleRegister = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    if (
-      !name ||
-      !email ||
-      !password ||
-      !confirmPassword
-    ) {
-      return alert("All fields are required.");
+    if (!name || !email || !password || !confirmPassword) {
+      return toast.error("All fields are required.");
     }
 
     if (password !== confirmPassword) {
-      return alert("Passwords do not match.");
+      return toast.error("Passwords do not match.");
     }
 
     if (password.length < 6) {
-      return alert(
-        "Password must be at least 6 characters."
-      );
+      return toast.error("Password must be at least 6 characters.");
     }
 
-  try {
-  setLoading(true);
+    try {
+      setLoading(true);
 
-  // Upload image first
-  const photoURL =await  uploadImage();
+      // Upload image first
+      const photoURL = await uploadImage();
 
-  console.log("Photo URL:", photoURL);
+      console.log("Photo URL:", photoURL);
 
-  // Firebase Register
-  const result = await createuser(email, password);
+      // Firebase Register
+      const result = await createuser(email, password);
 
-  // Update Firebase Profile
-  await upadeteuser({
-    displayName: name,
-    photoURL,
-  });
+      // Update Firebase Profile
+      await upadeteuser({
+        displayName: name,
+        photoURL,
+      });
 
-  // Save into Database
-  await axiosInstance.post("/auth/register", {
-    uid: result.user.uid,
-    name,
-    email,
-    role: "client",
-    photoURL,
-  });
+      // Save into Database
+      await axiosInstance.post("/auth/register", {
+        uid: result.user.uid,
+        name,
+        email,
+        role: "client",
+        photoURL,
+      });
 
-  alert("Registration Successful");
+      toast.success("Registration Successful");
+      setTimeout(() => {
+        redirect();
+      }, 1000);
 
-  setName("");
-  setEmail("");
-  setPassword("");
-  setConfirmPassword("");
-  setImages([]);
-}
-catch (error: any) {
-  console.error(error);
-  alert(error.response?.data?.message || error.message);
-}
-finally {
-  setLoading(false);
-}
+      setName("");
+      setEmail("");
+      setPassword("");
+      setConfirmPassword("");
+      setImages([]);
+    } catch (error: any) {
+      console.error(error);
+      toast.error(error.response?.data?.message || error.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   // ---------------- GOOGLE LOGIN ----------------
@@ -136,10 +125,13 @@ finally {
         photoURL: result.user.photoURL,
       });
 
-      alert("Google Login Successful");
+      toast.success("Google Login Successful");
+      setTimeout(() => {
+        redirect();
+      }, 1000);
     } catch (error: any) {
       console.error(error);
-      alert(error.response?.data?.message || error.message);
+      toast.error(error.response?.data?.message || error.message);
     } finally {
       setGoogleLoading(false);
     }
@@ -148,108 +140,78 @@ finally {
   return (
     <div className="min-h-screen flex items-center justify-center bg-slate-100 px-4">
       <div className="w-full max-w-md bg-white rounded-xl shadow-lg p-8">
-
-        <h2 className="text-3xl font-bold text-center">
-          Create Account
-        </h2>
+        <h2 className="text-3xl font-bold text-center">Create Account</h2>
 
         <p className="text-center text-gray-500 mt-2 mb-8">
           Join FreelanceHub today
         </p>
 
-        <form
-          onSubmit={handleRegister}
-          className="space-y-5"
-        >
+        <form onSubmit={handleRegister} className="space-y-5">
           {/* Name */}
 
           <div>
-            <label className="text-sm font-medium">
-              Full Name
-            </label>
+            <label className="text-sm font-medium">Full Name</label>
 
             <input
               type="text"
               className="w-full border rounded-lg mt-1 p-3"
               placeholder="John Doe"
               value={name}
-              onChange={(e) =>
-                setName(e.target.value)
-              }
+              onChange={(e) => setName(e.target.value)}
             />
           </div>
 
           {/* Email */}
 
           <div>
-            <label className="text-sm font-medium">
-              Email
-            </label>
+            <label className="text-sm font-medium">Email</label>
 
             <input
               type="email"
               className="w-full border rounded-lg mt-1 p-3"
               placeholder="example@gmail.com"
               value={email}
-              onChange={(e) =>
-                setEmail(e.target.value)
-              }
+              onChange={(e) => setEmail(e.target.value)}
             />
           </div>
 
           {/* Profile Image */}
 
-         {/* Profile Image */}
+          {/* Profile Image */}
 
-<div>
-  <label className="text-sm font-medium">
-    Profile Image
-  </label>
+          <div>
+            <label className="text-sm font-medium">Profile Image</label>
 
-  <input
-    type="file"
-    accept="image/*"
-    className="w-full border rounded-lg mt-1 p-3"
-    onChange={(e) => {
-      const files = Array.from(e.target.files || []);
-      setImages(files);
-    }}
-  />
-</div>
+            <input
+              type="file"
+              accept="image/*"
+              className="w-full border rounded-lg mt-1 p-3"
+              onChange={(e) => {
+                const files = Array.from(e.target.files || []);
+                setImages(files);
+              }}
+            />
+          </div>
 
           {/* Password */}
 
           <div>
-            <label className="text-sm font-medium">
-              Password
-            </label>
+            <label className="text-sm font-medium">Password</label>
 
             <div className="relative mt-1">
               <input
-                type={
-                  showPassword
-                    ? "text"
-                    : "password"
-                }
+                type={showPassword ? "text" : "password"}
                 className="w-full border rounded-lg p-3"
                 value={password}
-                onChange={(e) =>
-                  setPassword(e.target.value)
-                }
+                onChange={(e) => setPassword(e.target.value)}
               />
 
               <button
                 type="button"
-                onClick={() =>
-                  setShowPassword(!showPassword)
-                }
+                onClick={() => setShowPassword(!showPassword)}
                 className="absolute right-3 top-3"
               >
-                {showPassword ? (
-                  <EyeOff size={18} />
-                ) : (
-                  <Eye size={18} />
-                )}
+                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
               </button>
             </div>
           </div>
@@ -257,40 +219,22 @@ finally {
           {/* Confirm Password */}
 
           <div>
-            <label className="text-sm font-medium">
-              Confirm Password
-            </label>
+            <label className="text-sm font-medium">Confirm Password</label>
 
             <div className="relative mt-1">
               <input
-                type={
-                  showConfirmPassword
-                    ? "text"
-                    : "password"
-                }
+                type={showConfirmPassword ? "text" : "password"}
                 className="w-full border rounded-lg p-3"
                 value={confirmPassword}
-                onChange={(e) =>
-                  setConfirmPassword(
-                    e.target.value
-                  )
-                }
+                onChange={(e) => setConfirmPassword(e.target.value)}
               />
 
               <button
                 type="button"
-                onClick={() =>
-                  setShowConfirmPassword(
-                    !showConfirmPassword
-                  )
-                }
+                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                 className="absolute right-3 top-3"
               >
-                {showConfirmPassword ? (
-                  <EyeOff size={18} />
-                ) : (
-                  <Eye size={18} />
-                )}
+                {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
               </button>
             </div>
           </div>
@@ -302,9 +246,7 @@ finally {
             disabled={loading}
             className="w-full bg-indigo-600 text-white py-3 rounded-lg hover:bg-indigo-700 disabled:opacity-60"
           >
-            {loading
-              ? "Creating Account..."
-              : "Register"}
+            {loading ? "Creating Account..." : "Register"}
           </button>
         </form>
 
@@ -313,9 +255,7 @@ finally {
         <div className="flex items-center gap-3 my-6">
           <div className="flex-1 h-px bg-gray-300"></div>
 
-          <span className="text-gray-400 text-sm">
-            OR
-          </span>
+          <span className="text-gray-400 text-sm">OR</span>
 
           <div className="flex-1 h-px bg-gray-300"></div>
         </div>
@@ -329,17 +269,12 @@ finally {
         >
           <Mail size={18} />
 
-          {googleLoading
-            ? "Signing In..."
-            : "Continue with Google"}
+          {googleLoading ? "Signing In..." : "Continue with Google"}
         </button>
 
         <p className="text-center mt-6 text-sm">
           Already have an account?{" "}
-          <Link
-            to="/login"
-            className="text-indigo-600 hover:underline"
-          >
+          <Link to="/login" className="text-indigo-600 hover:underline">
             Login
           </Link>
         </p>

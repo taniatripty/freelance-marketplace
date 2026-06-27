@@ -1,176 +1,15 @@
-
-
-// import React, { useState } from "react";
-// import { Eye, EyeOff } from "lucide-react";
-// import { useMutation } from "@tanstack/react-query";
-// import { useNavigate, Link } from "react-router";
-// import axiosInstance from "@/UseAxios/axios";
-
-// const Login: React.FC = () => {
-//   const navigate = useNavigate();
-
-//   const [email, setEmail] = useState("");
-//   const [password, setPassword] = useState("");
-//   const [showPassword, setShowPassword] =
-//     useState(false);
-
-//   const loginMutation = useMutation({
-//     mutationFn: async (payload: {
-//       email: string;
-//       password: string;
-//     }) => {
-//       const { data } = await axiosInstance.post(
-//         "/auth/login",
-//         payload
-//       );
-
-//       return data;
-//     },
-//   });
-
-//   const handleLogin = (e: React.FormEvent) => {
-//     e.preventDefault();
-
-//     if (!email || !password) {
-//       return alert("Please fill all fields");
-//     }
-
-//     loginMutation.mutate(
-//       {
-//         email,
-//         password,
-//       },
-//       {
-//         onSuccess: (data) => {
-//           console.log("Login Success", data);
-
-//           // Future JWT Token
-//           // localStorage.setItem("token", data.token);
-
-//           setEmail("");
-//           setPassword("");
-
-//           alert("Login Successful");
-
-//           navigate("/");
-//         },
-
-//         onError: (error: any) => {
-//           console.log(error);
-
-//           alert(
-//             error?.response?.data?.message ||
-//               "Login Failed"
-//           );
-//         },
-//       }
-//     );
-//   };
-
-//   return (
-//     <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
-//       <div className="w-full max-w-md bg-white rounded-xl shadow-lg p-8">
-//         <h2 className="text-3xl font-bold text-center mb-2">
-//           Welcome Back
-//         </h2>
-
-//         <p className="text-center text-gray-500 mb-6">
-//           Login to your account
-//         </p>
-
-//         <form
-//           onSubmit={handleLogin}
-//           className="space-y-4"
-//         >
-//           {/* Email */}
-//           <div>
-//             <label className="block mb-2 text-sm font-medium">
-//               Email
-//             </label>
-
-//             <input
-//               type="email"
-//               placeholder="Enter your email"
-//               value={email}
-//               onChange={(e) =>
-//                 setEmail(e.target.value)
-//               }
-//               className="w-full border rounded-lg px-4 py-3 outline-none focus:ring-2 focus:ring-blue-500"
-//             />
-//           </div>
-
-//           {/* Password */}
-//           <div>
-//             <label className="block mb-2 text-sm font-medium">
-//               Password
-//             </label>
-
-//             <div className="relative">
-//               <input
-//                 type={
-//                   showPassword ? "text" : "password"
-//                 }
-//                 placeholder="Enter your password"
-//                 value={password}
-//                 onChange={(e) =>
-//                   setPassword(e.target.value)
-//                 }
-//                 className="w-full border rounded-lg px-4 py-3 pr-12 outline-none focus:ring-2 focus:ring-blue-500"
-//               />
-
-//               <button
-//                 type="button"
-//                 onClick={() =>
-//                   setShowPassword(!showPassword)
-//                 }
-//                 className="absolute right-3 top-1/2 -translate-y-1/2"
-//               >
-//                 {showPassword ? (
-//                   <EyeOff size={20} />
-//                 ) : (
-//                   <Eye size={20} />
-//                 )}
-//               </button>
-//             </div>
-//           </div>
-
-//           {/* Submit */}
-//           <button
-//             type="submit"
-//             disabled={loginMutation.isPending}
-//             className="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition disabled:opacity-50"
-//           >
-//             {loginMutation.isPending
-//               ? "Signing In..."
-//               : "Sign In"}
-//           </button>
-//         </form>
-
-//         <p className="text-center mt-6 text-gray-600">
-//           Don't have an account?{" "}
-//           <Link
-//             to="/register"
-//             className="text-blue-600 font-medium"
-//           >
-//             Register
-//           </Link>
-//         </p>
-//       </div>
-//     </div>
-//   );
-// };
-
-// export default Login;
-
-import React, { useState } from "react";
-import { Eye, EyeOff, Mail } from "lucide-react";
-import { useNavigate, Link } from "react-router";
-import axiosInstance from "@/UseAxios/axios";
 import { useAuth } from "@/AuthContex/UseAuth";
+import useRedirect from "@/hooks/useRedirect";
+import axiosInstance from "@/UseAxios/axios";
+import { Eye, EyeOff, Mail } from "lucide-react";
+import React, { useState } from "react";
+import toast from "react-hot-toast";
+import { Link } from "react-router";
 
 const Login: React.FC = () => {
-  const navigate = useNavigate();
+ 
   const { login, Googlelogin } = useAuth();
+  const { redirect } = useRedirect();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -186,7 +25,7 @@ const Login: React.FC = () => {
     e.preventDefault();
 
     if (!email || !password) {
-      return alert("Please fill all fields");
+      return toast.error("Please fill all fields");
     }
 
     try {
@@ -208,16 +47,18 @@ const Login: React.FC = () => {
           headers: {
             Authorization: `Bearer ${token}`,
           },
-        }
+        },
       );
 
       setEmail("");
       setPassword("");
 
-      alert("Login Successful");
-      navigate("/");
+      toast.success("Login Successful");
+      setTimeout(() => {
+        redirect();
+      }, 1000);
     } catch (error: any) {
-      alert(error?.message || "Login Failed");
+      toast.error(error?.message || "Login Failed");
     } finally {
       setLoading(false);
     }
@@ -237,12 +78,14 @@ const Login: React.FC = () => {
         name: result.user.displayName,
         email: result.user.email,
         role: "client",
-        
       });
 
-      alert("Google Login Successful");
+      toast.success("Google Login Successful");
+      setTimeout(() => {
+        redirect();
+      }, 1000);
     } catch (error: any) {
-      alert(error?.message || "Google Login Failed");
+      toast.error(error?.message || "Google Login Failed");
     } finally {
       setGoogleLoading(false);
     }
@@ -251,27 +94,15 @@ const Login: React.FC = () => {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
       <div className="w-full max-w-md bg-white rounded-xl shadow-lg p-8">
-
         {/* Header */}
-        <h2 className="text-3xl font-bold text-center mb-2">
-          Welcome Back
-        </h2>
-        <p className="text-center text-gray-500 mb-6">
-          Login to your account
-        </p>
-
-       
-
-        
+        <h2 className="text-3xl font-bold text-center mb-2">Welcome Back</h2>
+        <p className="text-center text-gray-500 mb-6">Login to your account</p>
 
         {/* FORM */}
         <form onSubmit={handleLogin} className="space-y-4">
-
           {/* Email */}
           <div>
-            <label className="block mb-2 text-sm font-medium">
-              Email
-            </label>
+            <label className="block mb-2 text-sm font-medium">Email</label>
 
             <input
               type="email"
@@ -284,9 +115,7 @@ const Login: React.FC = () => {
 
           {/* Password */}
           <div>
-            <label className="block mb-2 text-sm font-medium">
-              Password
-            </label>
+            <label className="block mb-2 text-sm font-medium">Password</label>
 
             <div className="relative">
               <input
@@ -302,11 +131,7 @@ const Login: React.FC = () => {
                 onClick={() => setShowPassword(!showPassword)}
                 className="absolute right-3 top-1/2 -translate-y-1/2"
               >
-                {showPassword ? (
-                  <EyeOff size={20} />
-                ) : (
-                  <Eye size={20} />
-                )}
+                {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
               </button>
             </div>
           </div>
@@ -326,7 +151,7 @@ const Login: React.FC = () => {
           <div className="flex-1 h-px bg-gray-200"></div>
         </div>
 
-         {/* GOOGLE LOGIN (TOP or ABOVE FORM) */}
+        {/* GOOGLE LOGIN (TOP or ABOVE FORM) */}
         <button
           onClick={handleGoogleLogin}
           disabled={googleLoading}
@@ -343,7 +168,6 @@ const Login: React.FC = () => {
             Register
           </Link>
         </p>
-
       </div>
     </div>
   );
