@@ -62,6 +62,10 @@ export const router = createBrowserRouter([
       path:"/allservices",
       element:<AllGigs></AllGigs>
     },
+    {
+      path:"gigs/:id",
+      element:<GigDetails></GigDetails>
+    },
     
     {
       path:"/freelancer/:id",

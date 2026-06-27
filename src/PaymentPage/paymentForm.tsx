@@ -7,6 +7,7 @@ import {
 } from "@stripe/react-stripe-js";
 import { useState } from "react";
 import axiosInstance from "@/UseAxios/axios";
+import toast from "react-hot-toast";
 
 type Props = {
   orderId: string;
@@ -77,7 +78,7 @@ const PaymentForm = ({ orderId, amount, onSuccess }: Props) => {
 
         
        
-        alert("Payment Successful 🎉");
+        toast.success("Payment Successful 🎉");
 
         onSuccess?.();
       } else {

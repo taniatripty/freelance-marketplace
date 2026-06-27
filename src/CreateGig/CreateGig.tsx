@@ -5,7 +5,7 @@ import React, { useEffect, useState } from "react";
 import axiosInstance from "@/UseAxios/axios";
 import axios from "axios";
 import { useAuth } from "@/AuthContex/UseAuth";
-
+import toast from "react-hot-toast";
 type Category = {
   _id: string;
   name: string;
@@ -99,7 +99,7 @@ const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     e.preventDefault();
 
     if (images.length < 2) {
-      alert("Please upload at least 2 images");
+      toast.error("Please upload at least 2 images");
       return;
     }
 
@@ -136,7 +136,7 @@ const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 
       await axiosInstance.post("/gigs", payload);
 
-      alert("Gig created successfully!");
+      toast.success("Gig created successfully!");
 
       // reset form
       setForm({
@@ -154,7 +154,7 @@ const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
       setFeatures("");
     } catch (error) {
       console.error(error);
-      alert("Failed to create gig");
+      toast.error("Failed to create gig");
     } finally {
       setLoading(false);
     }

@@ -3,6 +3,7 @@ import { useAuth } from "@/AuthContex/UseAuth";
 import axiosInstance from "@/UseAxios/axios";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router";
+import toast from "react-hot-toast";
 
 type Gig = {
   _id: string;
@@ -62,12 +63,12 @@ const Checkout = () => {
 
       const res = await axiosInstance.post("/orders", payload);
 
-      alert("Order placed successfully!");
+      toast.success("Order placed successfully!");
 
       console.log(res.data)
     } catch (error) {
       console.error(error);
-      alert("Failed to place order");
+      toast.error("Failed to place order");
     } finally {
       setPlacingOrder(false);
     }
