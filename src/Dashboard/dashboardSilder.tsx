@@ -89,7 +89,7 @@ const DashboardSidebar = () => {
             </NavLink>
 
             <NavLink
-              to="/dashboard/my-reviews"
+              to="/dashboard/myreviews"
               className={navClass}
             >
               <Star size={18} />
@@ -126,7 +126,7 @@ const DashboardSidebar = () => {
             </NavLink>
 
             <NavLink
-              to="/dashboard/earnings"
+              to="/dashboard/myearning"
               className={navClass}
             >
               <Wallet size={18} />

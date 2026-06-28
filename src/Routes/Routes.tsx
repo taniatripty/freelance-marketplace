@@ -29,6 +29,10 @@ import PrivateRoute from "./privateRoutes";
 import EditGig from "@/MyGigs/EditGigs/EditGigs";
 import EditProfile from "@/Dashboard/MyProfile/EditProfile/EditProfile";
 
+import AddWebsiteReview from "@/pages/WebsiteReview/WebsiteReview";
+import MyEarnings from "@/pages/MyEarning/MyEarning";
+import BuyerReviews from "@/Dashboard/BuyerReviews/BuyerReviews";
+
 
 
 export const router = createBrowserRouter([
@@ -111,6 +115,10 @@ export const router = createBrowserRouter([
       element:<CreateReview></CreateReview>
     },
     {
+      path:"websitereview",
+      element:<AddWebsiteReview></AddWebsiteReview>
+    },
+    {
       path:'/login',
       element:<Login></Login>
     },
@@ -157,6 +165,14 @@ export const router = createBrowserRouter([
      path:"managesellerOrder",
      element:<ManageSellerOrders></ManageSellerOrders>
 
+    },
+    {
+      path:"myearning",
+      element:<MyEarnings></MyEarnings>
+    },
+    {
+      path:"myreviews",
+      element:<BuyerReviews></BuyerReviews>
     },
     
     {

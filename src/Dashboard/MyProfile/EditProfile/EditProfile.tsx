@@ -1,8 +1,12 @@
+
+
+
 import axiosInstance from "@/UseAxios/axios";
 import useCurrentUser from "@/hooks/UserRoles";
 import axios from "axios";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router";
+import toast from "react-hot-toast";
 
 export interface CurrentUser {
   uid: string;
@@ -10,64 +14,42 @@ export interface CurrentUser {
   email: string;
   role: string;
   photoURL: string;
-
   phone?: string;
   country?: string;
   city?: string;
   bio?: string;
-  
   createdAt?: string;
 }
 
 const EditProfile = () => {
   const navigate = useNavigate();
-
   const { data: currentUser, refetch } = useCurrentUser();
-
   const [loading, setLoading] = useState(false);
-
   const [image, setImage] = useState<File | null>(null);
 
   const [form, setForm] = useState({
-    name: "",
-    phone: "",
-    country: "",
-    city: "",
-    bio: "",
-   
+    name: currentUser?.name ?? "",
+    phone: currentUser?.phone ?? "",
+    country: currentUser?.country ?? "",
+    city: currentUser?.city ?? "",
+    bio: currentUser?.bio ?? "",
   });
-
-  useEffect(() => {
-    if (!currentUser) return;
-
-    setForm((prev) => ({
-      ...prev,
-      name: currentUser.name ?? "",
-      phone: currentUser.phone ?? "",
-      country: currentUser.country ?? "",
-      city: currentUser.city ?? "",
-      bio: currentUser.bio ?? "",
-     
-    }));
-  }, [currentUser]);
 
   const uploadImage = async () => {
     if (!image) return currentUser?.photoURL || "";
 
     const formData = new FormData();
-
     formData.append("file", image);
-
     formData.append(
       "upload_preset",
-      import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET,
+      import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET
     );
 
     const res = await axios.post(
       `https://api.cloudinary.com/v1_1/${
         import.meta.env.VITE_CLOUDINARY_CLOUD_NAME
       }/image/upload`,
-      formData,
+      formData
     );
 
     return res.data.secure_url;
@@ -88,17 +70,16 @@ const EditProfile = () => {
         city: form.city,
         bio: form.bio,
         photoURL,
-        
       };
 
       await axiosInstance.patch(`/auth/users/${currentUser.uid}`, payload);
       await refetch();
 
-      alert("Profile Updated");
-
+      toast.success("Profile Updated");
       navigate("/dashboard/profile");
     } catch (err) {
       console.log(err);
+      toast.error("Failed to update profile");
     } finally {
       setLoading(false);
     }
@@ -107,7 +88,7 @@ const EditProfile = () => {
   if (!currentUser) return <div>Loading...</div>;
 
   return (
-    <div className="max-w-4xl mx-auto">
+    <div key={currentUser.uid} className="max-w-4xl mx-auto">
       <div className="bg-white rounded-2xl shadow border p-8">
         <h1 className="text-3xl font-bold mb-8">Edit Profile</h1>
 
@@ -154,17 +135,7 @@ const EditProfile = () => {
             className="w-full border rounded-xl p-3 bg-gray-100 capitalize"
           />
 
-          <input
-            className="w-full border rounded-xl p-3"
-            placeholder="Phone Number"
-            value={form.phone}
-            onChange={(e) =>
-              setForm({
-                ...form,
-                phone: e.target.value,
-              })
-            }
-          />
+          
 
           <div className="grid grid-cols-2 gap-4">
             <input
@@ -189,10 +160,21 @@ const EditProfile = () => {
                   city: e.target.value,
                 })
               }
-            />
-          </div>
 
-        
+              
+            />
+            <input
+            className="w-full border rounded-xl p-3"
+            placeholder="Phone Number"
+            value={form.phone}
+            onChange={(e) =>
+              setForm({
+                ...form,
+                phone: e.target.value,
+              })
+            }
+          />
+          </div>
 
           <textarea
             rows={6}
@@ -209,7 +191,7 @@ const EditProfile = () => {
 
           <button
             disabled={loading}
-            className="bg-indigo-600 text-white px-8 py-3 rounded-xl"
+            className="bg-indigo-600 text-white px-8 py-3 rounded-xl disabled:opacity-60"
           >
             {loading ? "Saving..." : "Save Changes"}
           </button>
