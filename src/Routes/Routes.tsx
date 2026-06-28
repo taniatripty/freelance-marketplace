@@ -27,6 +27,7 @@ import MyGigs from "@/MyGigs/MyAllGigs";
 import AllFreelancers from "@/pages/AllFreelancer/AllFreelancers";
 import PrivateRoute from "./privateRoutes";
 import EditGig from "@/MyGigs/EditGigs/EditGigs";
+import EditProfile from "@/Dashboard/MyProfile/EditProfile/EditProfile";
 
 
 
@@ -131,6 +132,10 @@ export const router = createBrowserRouter([
       {
         path:"profile",
         element:<MyProfile></MyProfile>
+      },
+      {
+        path:"edit-profile",
+        element:<EditProfile></EditProfile>
       },
       {
       path:"createGig",

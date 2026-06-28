@@ -1,9 +1,11 @@
 import useCurrentUser from "@/hooks/UserRoles";
-import { Mail, User, Shield } from "lucide-react";
+import { Mail, User, Shield, Pencil, MapPin } from "lucide-react";
+import { useNavigate } from "react-router";
+
 
 const MyProfile = () => {
   const { data: currentUser, isLoading } = useCurrentUser();
-
+const navigate=useNavigate()
   if (isLoading) {
     return (
       <div className="flex justify-center py-20">
@@ -37,6 +39,28 @@ const MyProfile = () => {
             <p className="text-gray-500 mt-1">
               {currentUser?.email}
             </p>
+            <div className="flex items-center gap-2 mt-3 text-gray-600">
+  <div className="p-1.5 rounded-full bg-indigo-50">
+    <MapPin
+      size={16}
+      className="text-indigo-600"
+    />
+  </div>
+
+  {currentUser?.city || currentUser?.country ? (
+    <span className="text-sm font-medium">
+      {currentUser?.city}
+      {currentUser?.city &&
+        currentUser?.country &&
+        ", "}
+      {currentUser?.country}
+    </span>
+  ) : (
+    <span className="text-sm text-gray-400">
+      Location not added
+    </span>
+  )}
+</div>
 
             <span className="inline-block mt-3 px-4 py-1 rounded-full bg-indigo-100 text-indigo-700 text-sm capitalize">
               {currentUser?.role}
@@ -135,11 +159,16 @@ const MyProfile = () => {
         )}
 
         {/* BUTTON */}
-        <div className="mt-8">
-          <button className="px-6 py-3 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700">
-            Edit Profile
-          </button>
-        </div>
+        <div className="mt-8 flex justify-end">
+  <button
+    onClick={() => navigate("/dashboard/edit-profile")}
+    className="flex items-center gap-2 px-6 py-3 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 transition-colors"
+  >
+    <Pencil size={18} />
+    Edit Profile
+  </button>
+</div>
+
 
       </div>
     </div>
