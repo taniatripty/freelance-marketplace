@@ -14,7 +14,9 @@ import {
   Users,
   FolderKanban,
   Package,
-  LogOut
+  LogOut,
+  
+  BadgeCheck
  
 } from "lucide-react";
 
@@ -86,6 +88,20 @@ const DashboardSidebar = () => {
             >
               <ShoppingBag size={18} />
               <span>My Purchases</span>
+            </NavLink>
+           <NavLink
+              to="/dashboard/completedorders"
+              className={navClass}
+            >
+              <BadgeCheck size={18} />
+              <span>Completed Orders</span>
+            </NavLink>
+             <NavLink
+              to="/dashboard/buyerpayment"
+              className={navClass}
+            >
+              <Wallet size={18} />
+              <span>Total Payment</span>
             </NavLink>
 
             <NavLink

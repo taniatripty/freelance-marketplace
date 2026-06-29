@@ -30,8 +30,11 @@ import EditGig from "@/MyGigs/EditGigs/EditGigs";
 import EditProfile from "@/Dashboard/MyProfile/EditProfile/EditProfile";
 
 import AddWebsiteReview from "@/pages/WebsiteReview/WebsiteReview";
-import MyEarnings from "@/pages/MyEarning/MyEarning";
+import MyEarnings from "@/Dashboard/FreelancerDashboard/MyEarning/MyEarning";
 import BuyerReviews from "@/Dashboard/BuyerReviews/BuyerReviews";
+import CompletedOrders from "@/Dashboard/ClientDashboard/CompletedOrders/CompletedOrders";
+import ClientPayment from "@/Dashboard/ClientDashboard/ClientPayment/ClientPayment";
+import AllUsers from "@/Dashboard/AdminDashboard/AllUsers/AllUsers";
 
 
 
@@ -142,6 +145,10 @@ export const router = createBrowserRouter([
         element:<MyProfile></MyProfile>
       },
       {
+        path:"users",
+        element:<AllUsers></AllUsers>
+      },
+      {
         path:"edit-profile",
         element:<EditProfile></EditProfile>
       },
@@ -171,8 +178,16 @@ export const router = createBrowserRouter([
       element:<MyEarnings></MyEarnings>
     },
     {
+      path:"buyerpayment",
+      element:<ClientPayment></ClientPayment>
+    },
+    {
       path:"myreviews",
       element:<BuyerReviews></BuyerReviews>
+    },
+    {
+      path:"completedorders",
+      element:<CompletedOrders></CompletedOrders>
     },
     
     {
