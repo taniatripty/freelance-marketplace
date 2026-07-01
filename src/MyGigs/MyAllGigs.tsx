@@ -185,11 +185,17 @@ const MyGigs = () => {
                   </button>
 
                   <button
-                    disabled={gig.status === "deleted"}
+                    disabled={
+                      gig.status === "deleted" || gig.status === "suspended"
+                    }
                     onClick={() => handleDelete(gig._id)}
-                    className="flex-1 bg-red-600 text-white rounded-lg py-2 disabled:bg-gray-300 disabled:cursor-not-allowed"
+                    className="flex-1 rounded-lg bg-red-600 py-2 text-white transition hover:bg-red-700 disabled:cursor-not-allowed disabled:bg-gray-300"
                   >
-                    {gig.status === "deleted" ? "Deleted" : "Delete"}
+                    {gig.status === "deleted"
+                      ? "Deleted"
+                      : gig.status === "suspended"
+                        ? "Suspended"
+                        : "Delete"}
                   </button>
                 </div>
 

@@ -35,6 +35,7 @@ import BuyerReviews from "@/Dashboard/BuyerReviews/BuyerReviews";
 import CompletedOrders from "@/Dashboard/ClientDashboard/CompletedOrders/CompletedOrders";
 import ClientPayment from "@/Dashboard/ClientDashboard/ClientPayment/ClientPayment";
 import AllUsers from "@/Dashboard/AdminDashboard/AllUsers/AllUsers";
+import ManageGigs from "@/Dashboard/AdminDashboard/ManageGigs/ManageGigs";
 
 
 
@@ -143,6 +144,10 @@ export const router = createBrowserRouter([
       {
         path:"profile",
         element:<MyProfile></MyProfile>
+      },
+      {
+        path:"gigs",
+        element:<ManageGigs></ManageGigs>
       },
       {
         path:"users",
