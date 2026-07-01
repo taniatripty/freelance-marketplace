@@ -144,18 +144,7 @@ const MyGigs = () => {
 
                   <div>
                     <p className="text-gray-500">Status</p>
-
-                    {/* <span
-                      className={`text-xs px-2 py-1 rounded-full ${
-                        gig.status === "active"
-                          ? "bg-green-100 text-green-700"
-                          : "bg-red-100 text-red-700"
-                      }`}
-                    >
-                      {gig.status}
-                    </span> */}
-
-                    <span
+                     <span
                       className={`text-xs px-2 py-1 rounded-full ${
                         gig.status === "active"
                           ? "bg-green-100 text-green-700"

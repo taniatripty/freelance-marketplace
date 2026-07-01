@@ -36,6 +36,9 @@ import CompletedOrders from "@/Dashboard/ClientDashboard/CompletedOrders/Complet
 import ClientPayment from "@/Dashboard/ClientDashboard/ClientPayment/ClientPayment";
 import AllUsers from "@/Dashboard/AdminDashboard/AllUsers/AllUsers";
 import ManageGigs from "@/Dashboard/AdminDashboard/ManageGigs/ManageGigs";
+import ManageOrders from "@/Dashboard/AdminDashboard/ManageOrders/ManageOrders";
+import OrderDetails from "@/Dashboard/AdminDashboard/ManageOrders/OrderDetails";
+import ManageReviews from "@/Dashboard/AdminDashboard/ManageReviews/ManageReviews";
 
 
 
@@ -150,6 +153,11 @@ export const router = createBrowserRouter([
         element:<ManageGigs></ManageGigs>
       },
       {
+        path:"manageorder",
+        element:<ManageOrders></ManageOrders>
+      }
+      ,
+      {
         path:"users",
         element:<AllUsers></AllUsers>
       },
@@ -177,6 +185,15 @@ export const router = createBrowserRouter([
      path:"managesellerOrder",
      element:<ManageSellerOrders></ManageSellerOrders>
 
+    },
+    {
+      path:"admin/order/:id",
+      element:<OrderDetails></OrderDetails>
+    },
+    {
+
+      path:"allreviews",
+      element:<ManageReviews></ManageReviews>
     },
     {
       path:"myearning",

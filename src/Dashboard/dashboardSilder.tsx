@@ -171,11 +171,18 @@ const DashboardSidebar = () => {
             </NavLink>
 
             <NavLink
-              to="/dashboard/orders"
+              to="/dashboard/manageorder"
               className={navClass}
             >
               <Package size={18} />
               <span>Manage Orders</span>
+            </NavLink>
+            <NavLink
+              to="/dashboard/allreviews"
+              className={navClass}
+            >
+              <Package size={18} />
+              <span>All Reviews</span>
             </NavLink>
           </>
         )}
