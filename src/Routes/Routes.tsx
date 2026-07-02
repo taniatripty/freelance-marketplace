@@ -40,6 +40,7 @@ import ManageOrders from "@/Dashboard/AdminDashboard/ManageOrders/ManageOrders";
 import OrderDetails from "@/Dashboard/AdminDashboard/ManageOrders/OrderDetails";
 import ManageReviews from "@/Dashboard/AdminDashboard/ManageReviews/ManageReviews";
 import Statistics from "@/Dashboard/AdminDashboard/AdminStatistics/Statistics";
+import BlogSection from "@/pages/Blog/Blog";
 
 
 
@@ -57,6 +58,10 @@ export const router = createBrowserRouter([
     {
       path:'/aboutus',
       element:<AboutUs></AboutUs>
+    },
+    {
+      path:"/blog",
+      element:<BlogSection></BlogSection>
     },
     {
       path:"/categorytable",
