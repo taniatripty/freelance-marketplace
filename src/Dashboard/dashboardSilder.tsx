@@ -16,7 +16,9 @@ import {
   Package,
   LogOut,
   
-  BadgeCheck
+  BadgeCheck,
+  MessageSquareText,
+  ChartColumn
  
 } from "lucide-react";
 
@@ -181,8 +183,15 @@ const DashboardSidebar = () => {
               to="/dashboard/allreviews"
               className={navClass}
             >
-              <Package size={18} />
+              <MessageSquareText size={18} />
               <span>All Reviews</span>
+            </NavLink>
+            <NavLink
+              to="/dashboard/statistics"
+              className={navClass}
+            >
+              <ChartColumn size={18} />
+              <span>Statistics</span>
             </NavLink>
           </>
         )}

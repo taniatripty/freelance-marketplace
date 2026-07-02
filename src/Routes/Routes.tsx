@@ -39,6 +39,7 @@ import ManageGigs from "@/Dashboard/AdminDashboard/ManageGigs/ManageGigs";
 import ManageOrders from "@/Dashboard/AdminDashboard/ManageOrders/ManageOrders";
 import OrderDetails from "@/Dashboard/AdminDashboard/ManageOrders/OrderDetails";
 import ManageReviews from "@/Dashboard/AdminDashboard/ManageReviews/ManageReviews";
+import Statistics from "@/Dashboard/AdminDashboard/AdminStatistics/Statistics";
 
 
 
@@ -194,6 +195,10 @@ export const router = createBrowserRouter([
 
       path:"allreviews",
       element:<ManageReviews></ManageReviews>
+    },
+    {
+      path:"statistics",
+      element:<Statistics></Statistics>
     },
     {
       path:"myearning",

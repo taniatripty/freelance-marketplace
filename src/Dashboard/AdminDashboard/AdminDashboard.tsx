@@ -1,4 +1,6 @@
 import DashboardHeader from "../DashboardHome/DashboardHeader";
+import StatisticsChart from "./UserLineChart/UserLineChart";
+
 
 
 const AdminDashboard = () => {
@@ -6,7 +8,7 @@ const AdminDashboard = () => {
     <div className="space-y-6">
       <DashboardHeader />
 
-     
+     <StatisticsChart></StatisticsChart>
     </div>
   );
 };
