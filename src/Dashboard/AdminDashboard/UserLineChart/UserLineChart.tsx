@@ -1,17 +1,17 @@
-import { useQuery } from "@tanstack/react-query";
 import axiosInstance from "@/UseAxios/axios";
+import { useQuery } from "@tanstack/react-query";
 import {
-  PieChart,
-  Pie,
-  Cell,
-  BarChart,
   Bar,
+  BarChart,
+  CartesianGrid,
+  Cell,
+  Legend,
+  Pie,
+  PieChart,
+  ResponsiveContainer,
+  Tooltip,
   XAxis,
   YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-  Legend,
 } from "recharts";
 
 type Statistics = {
@@ -50,7 +50,9 @@ const StatisticsChart = () => {
   const { data, isLoading } = useQuery<Statistics>({
     queryKey: ["admin-statistics"],
     queryFn: async () => {
-      const res = await axiosInstance.get("http://localhost:5000/stas/admin");
+      const res = await axiosInstance.get(
+        "https://freelancemarketplace-server.vercel.app/stas/admin",
+      );
       return res.data.data;
     },
   });
@@ -90,7 +92,9 @@ const StatisticsChart = () => {
   return (
     <div className="grid gap-6 xl:grid-cols-2">
       <div className="rounded-2xl border bg-white p-5 shadow-sm">
-        <h2 className="mb-1 text-xl font-semibold text-slate-900">Users Distribution</h2>
+        <h2 className="mb-1 text-xl font-semibold text-slate-900">
+          Users Distribution
+        </h2>
         <p className="mb-5 text-sm text-slate-500">
           Breakdown of buyers, freelancers, and admins.
         </p>
@@ -109,7 +113,10 @@ const StatisticsChart = () => {
                 paddingAngle={3}
               >
                 {userData.map((_, index) => (
-                  <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                  <Cell
+                    key={`cell-${index}`}
+                    fill={COLORS[index % COLORS.length]}
+                  />
                 ))}
               </Pie>
               <Tooltip />
@@ -120,14 +127,19 @@ const StatisticsChart = () => {
       </div>
 
       <div className="rounded-2xl border bg-white p-5 shadow-sm">
-        <h2 className="mb-1 text-xl font-semibold text-slate-900">Orders Status</h2>
+        <h2 className="mb-1 text-xl font-semibold text-slate-900">
+          Orders Status
+        </h2>
         <p className="mb-5 text-sm text-slate-500">
           Order status breakdown from your dashboard data.
         </p>
 
         <div className="h-[340px] w-full">
           <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={orderData} margin={{ top: 10, right: 20, left: 0, bottom: 0 }}>
+            <BarChart
+              data={orderData}
+              margin={{ top: 10, right: 20, left: 0, bottom: 0 }}
+            >
               <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
               <XAxis dataKey="name" stroke="#64748b" />
               <YAxis stroke="#64748b" />

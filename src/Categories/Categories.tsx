@@ -1,7 +1,5 @@
-
-
-import React, { useState } from "react";
 import axios from "axios";
+import React, { useState } from "react";
 
 const AddCategory = () => {
   const [name, setName] = useState("");
@@ -29,7 +27,7 @@ const AddCategory = () => {
     formData.append("file", file);
     formData.append(
       "upload_preset",
-      import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET
+      import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET,
     );
 
     const response = await fetch(
@@ -39,7 +37,7 @@ const AddCategory = () => {
       {
         method: "POST",
         body: formData,
-      }
+      },
     );
 
     const data = await response.json();
@@ -77,8 +75,8 @@ const AddCategory = () => {
       };
 
       const res = await axios.post(
-        "http://localhost:5000/categories",
-        categoryData
+        "https://freelancemarketplace-server.vercel.app/categories",
+        categoryData,
       );
 
       console.log("Backend response:", res.data);
