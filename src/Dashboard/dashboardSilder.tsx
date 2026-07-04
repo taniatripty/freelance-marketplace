@@ -18,7 +18,9 @@ import {
   
   BadgeCheck,
   MessageSquareText,
-  ChartColumn
+  ChartColumn,
+
+  Boxes
  
 } from "lucide-react";
 
@@ -162,6 +164,13 @@ const DashboardSidebar = () => {
             >
               <Users size={18} />
               <span>Manage Users</span>
+            </NavLink>
+            <NavLink
+              to="/dashboard/categories"
+              className={navClass}
+            >
+             <Boxes size={18}></Boxes>
+              <span>Create Category</span>
             </NavLink>
 
             <NavLink

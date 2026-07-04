@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const axiosInstance = axios.create({
-  baseURL: "https://freelancemarketplace-server.vercel.app", // ✅ no space
+  baseURL: "http://localhost:5000", // ✅ no space
   withCredentials: true,
   headers: {
     "Content-Type": "application/json",

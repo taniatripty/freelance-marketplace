@@ -50,9 +50,7 @@ const StatisticsChart = () => {
   const { data, isLoading } = useQuery<Statistics>({
     queryKey: ["admin-statistics"],
     queryFn: async () => {
-      const res = await axiosInstance.get(
-        "https://freelancemarketplace-server.vercel.app/stas/admin",
-      );
+      const res = await axiosInstance.get("http://localhost:5000/stas/admin");
       return res.data.data;
     },
   });

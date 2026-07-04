@@ -91,10 +91,7 @@ export const router = createBrowserRouter([
       element:<FreelancerDetails></FreelancerDetails>
 
     },
-    {
-      path:"/categories",
-      element:<AddCategory></AddCategory>
-    },
+   
     {
       path:"/categorytable",
       element:<CategoriesTable></CategoriesTable>
@@ -158,6 +155,10 @@ export const router = createBrowserRouter([
         path:"gigs",
         element:<ManageGigs></ManageGigs>
       },
+       {
+      path:"categories",
+      element:<AddCategory></AddCategory>
+    },
       {
         path:"manageorder",
         element:<ManageOrders></ManageOrders>

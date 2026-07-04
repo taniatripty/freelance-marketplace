@@ -34,7 +34,7 @@ const TopFreelancers = () => {
 
   if (isLoading) {
     return (
-      <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
         {[...Array(4)].map((_, i) => (
           <div
             key={i}
@@ -60,7 +60,7 @@ const TopFreelancers = () => {
 
       </div>
 
-      <div className="grid md:grid-cols-2 xl:grid-cols-4 gap-8">
+      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
 
         {freelancers.map((freelancer) => (
 

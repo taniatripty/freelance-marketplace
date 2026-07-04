@@ -112,9 +112,7 @@ const BlogPage = () => {
                 <div className="text-sm text-base-content/60">
                   By <span className="text-base-content">{blogs[0].author}</span>
                 </div>
-                <button className="rounded-lg bg-primary px-5 py-2.5 text-sm font-medium text-primary-content transition hover:opacity-90">
-                  Read Article
-                </button>
+                
               </div>
             </div>
           </article>
@@ -187,9 +185,7 @@ const BlogPage = () => {
 
                 <div className="mt-5 flex items-center justify-between">
                   <span className="text-sm text-base-content/60">{blog.author}</span>
-                  <button className="text-sm font-medium text-primary hover:opacity-80">
-                    Read more
-                  </button>
+                  
                 </div>
               </div>
             </article>
