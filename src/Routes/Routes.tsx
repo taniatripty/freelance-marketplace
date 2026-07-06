@@ -29,7 +29,6 @@ import PrivateRoute from "./privateRoutes";
 import EditGig from "@/MyGigs/EditGigs/EditGigs";
 import EditProfile from "@/Dashboard/MyProfile/EditProfile/EditProfile";
 
-import AddWebsiteReview from "@/pages/WebsiteReview/WebsiteReview";
 import MyEarnings from "@/Dashboard/FreelancerDashboard/MyEarning/MyEarning";
 import BuyerReviews from "@/Dashboard/BuyerReviews/BuyerReviews";
 import CompletedOrders from "@/Dashboard/ClientDashboard/CompletedOrders/CompletedOrders";
@@ -41,6 +40,7 @@ import OrderDetails from "@/Dashboard/AdminDashboard/ManageOrders/OrderDetails";
 import ManageReviews from "@/Dashboard/AdminDashboard/ManageReviews/ManageReviews";
 import Statistics from "@/Dashboard/AdminDashboard/AdminStatistics/Statistics";
 import BlogSection from "@/pages/Blog/Blog";
+import AddWebsiteReview from "@/pages/WebsiteReview/WebsiteReview";
 
 
 
@@ -121,11 +121,11 @@ export const router = createBrowserRouter([
      element:<OrderPage></OrderPage>
     },
     {
-      path:"review/:orderId",
+      path:"/review/:orderId",
       element:<CreateReview></CreateReview>
     },
     {
-      path:"websitereview",
+      path:"/webreview",
       element:<AddWebsiteReview></AddWebsiteReview>
     },
     {

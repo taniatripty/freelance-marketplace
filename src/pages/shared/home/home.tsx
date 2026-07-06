@@ -12,11 +12,13 @@ export default function Home() {
   return (
     <div>
         <Hero></Hero>
-        <AllFreelancers></AllFreelancers>
-        <TopFreelancers></TopFreelancers>
+        
+        
         <PopularServices></PopularServices>
         <LatestGigs></LatestGigs>
+        <TopFreelancers></TopFreelancers>
         <AllGigs></AllGigs>
+        <AllFreelancers></AllFreelancers>
         <WhyChooseUs></WhyChooseUs>
         <Testimonials></Testimonials>
     </div>

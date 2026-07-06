@@ -1,80 +1,100 @@
 
 
-
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Star, Send, MessageSquare } from "lucide-react";
 import { useMutation } from "@tanstack/react-query";
 import toast from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
 
 import useCurrentUser from "@/hooks/UserRoles";
 import axiosInstance from "@/UseAxios/axios";
 
 const AddWebsiteReview = () => {
-  const { data: currentUser } = useCurrentUser();
+  const { data: currentUser, isLoading, isError } = useCurrentUser();
+  const navigate = useNavigate();
 
   const [rating, setRating] = useState(0);
   const [hover, setHover] = useState(0);
   const [comment, setComment] = useState("");
 
+  // Redirect to login if not authenticated
+  useEffect(() => {
+    if (!isLoading && !currentUser) {
+      navigate("/login", { replace: true });
+    }
+  }, [currentUser, isLoading, navigate]);
+
   const reviewMutation = useMutation({
-  mutationFn: async (reviewData: {
-    uid: string;
-    name: string;
-    email: string;
-    photoURL: string;
-    role: string;
-    rating: number;
-    comment: string;
-  }) => {
-    const res = await axiosInstance.post(
-      "/reviews/website-reviews",
-      reviewData
-    );
+    mutationFn: async (reviewData: {
+      uid: string;
+      name: string;
+      email: string;
+      photoURL: string;
+      role: string;
+      rating: number;
+      comment: string;
+    }) => {
+      const res = await axiosInstance.post(
+        "/reviews/website-reviews",
+        reviewData
+      );
 
-    return res.data;
-  },
+      return res.data;
+    },
 
-  onSuccess: () => {
-    toast.success("Thank you for your review!");
+    onSuccess: () => {
+      toast.success("Thank you for your review!");
 
-    setRating(0);
-    setComment("");
-  },
+      setRating(0);
+      setComment("");
+    },
 
-  onError: (error) => {
-    console.log(error);
-    toast.error("Failed to submit review.");
-  },
-});
+    onError: (error: any) => {
+      console.log(error);
+
+      // Handle 401 Unauthorized (token expired)
+      if (error.response?.status === 401) {
+        navigate("/login", { replace: true });
+      } else {
+        toast.error("Failed to submit review.");
+      }
+    },
+  });
 
   const handleSubmit = (e: React.FormEvent) => {
-  e.preventDefault();
+    e.preventDefault();
 
-  if (!rating) {
-    return toast.error("Please give a rating.");
-  }
+    if (!rating) {
+      return toast.error("Please give a rating.");
+    }
 
-  if (!comment.trim()) {
-    return toast.error("Please write a review.");
-  }
+    if (!comment.trim()) {
+      return toast.error("Please write a review.");
+    }
 
-  reviewMutation.mutate({
-    uid: currentUser.uid,
-    name: currentUser.name,
-    email: currentUser.email,
-    photoURL: currentUser.photoURL,
-    role: currentUser.role,
-    rating,
-    comment,
-  });
-};
+    reviewMutation.mutate({
+      uid: currentUser!.uid,
+      name: currentUser!.name,
+      email: currentUser!.email,
+      photoURL: currentUser!.photoURL,
+      role: currentUser!.role,
+      rating,
+      comment,
+    });
+  };
 
-  if (!currentUser) {
+  // Show loading while checking auth (no error message)
+  if (isLoading) {
     return (
-      <div className="flex justify-center py-20">
-        Loading...
+      <div className="flex justify-center items-center min-h-screen">
+        <div className="text-slate-500 text-lg">Loading...</div>
       </div>
     );
+  }
+
+  // Don't render anything if not authenticated (will redirect)
+  if (!currentUser) {
+    return null;
   }
 
   return (

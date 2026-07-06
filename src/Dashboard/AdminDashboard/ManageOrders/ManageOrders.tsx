@@ -445,7 +445,7 @@ const ManageOrders = () => {
     return (
       <div className="flex min-h-[60vh] items-center justify-center">
         <div className="rounded-2xl border bg-white px-6 py-4 shadow-sm">
-          Loading Orders...
+         Loading.....
         </div>
       </div>
     );

@@ -1,3 +1,5 @@
+
+
 import { useAuth } from "@/AuthContex/UseAuth";
 import useRedirect from "@/hooks/useRedirect";
 import axiosInstance from "@/UseAxios/axios";
@@ -7,7 +9,6 @@ import toast from "react-hot-toast";
 import { Link } from "react-router";
 
 const Login: React.FC = () => {
- 
   const { login, Googlelogin } = useAuth();
   const { redirect } = useRedirect();
 
@@ -19,7 +20,7 @@ const Login: React.FC = () => {
   const [googleLoading, setGoogleLoading] = useState(false);
 
   // =========================
-  // EMAIL/PASSWORD LOGIN (Firebase + backend optional)
+  // EMAIL/PASSWORD LOGIN (Firebase + backend)
   // =========================
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -34,21 +35,23 @@ const Login: React.FC = () => {
       // Firebase login
       const result = await login(email, password);
 
-      // optional backend sync (recommended if you use MongoDB roles)
-      const token = await result.user.getIdToken();
+      // Call your backend login API (should return { token, user })
+      const res = await axiosInstance.post("/auth/login", {
+        email,
+        password, // backend will verify hashed password
+        uid: result.user.uid,
+      });
 
-      await axiosInstance.post(
-        "/auth/login",
-        {
-          email,
-          uid: result.user.uid,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        },
-      );
+      const { token, user } = res.data.data;
+      console.log(token)
+
+      // Save JWT token
+      localStorage.setItem("token", token);
+
+      // Optionally save user info
+      if (user) {
+        localStorage.setItem("user", JSON.stringify(user));
+      }
 
       setEmail("");
       setPassword("");
@@ -58,7 +61,7 @@ const Login: React.FC = () => {
         redirect();
       }, 1000);
     } catch (error: any) {
-      toast.error(error?.message || "Login Failed");
+      toast.error(error?.response?.data?.message || error?.message || "Login Failed");
     } finally {
       setLoading(false);
     }
@@ -73,19 +76,30 @@ const Login: React.FC = () => {
 
       const result = await Googlelogin();
 
-      await axiosInstance.post("/auth/register", {
+      const res = await axiosInstance.post("/auth/register", {
         uid: result.user.uid,
         name: result.user.displayName,
         email: result.user.email,
         role: "client",
+        photoURL: result.user.photoURL || "",
       });
+
+      const { token, user } = res.data.data;
+console.log(token)
+      // Save JWT token
+      localStorage.setItem("token", token);
+
+      // Optionally save user info
+      if (user) {
+        localStorage.setItem("user", JSON.stringify(user));
+      }
 
       toast.success("Google Login Successful");
       setTimeout(() => {
         redirect();
       }, 1000);
     } catch (error: any) {
-      toast.error(error?.message || "Google Login Failed");
+      toast.error(error?.response?.data?.message || error?.message || "Google Login Failed");
     } finally {
       setGoogleLoading(false);
     }
@@ -145,13 +159,14 @@ const Login: React.FC = () => {
             {loading ? "Signing In..." : "Sign In"}
           </button>
         </form>
+
         <div className="flex items-center gap-3 mt-4 mb-4">
           <div className="flex-1 h-px bg-gray-200"></div>
           <span className="text-xs text-gray-400">OR</span>
           <div className="flex-1 h-px bg-gray-200"></div>
         </div>
 
-        {/* GOOGLE LOGIN (TOP or ABOVE FORM) */}
+        {/* GOOGLE LOGIN */}
         <button
           onClick={handleGoogleLogin}
           disabled={googleLoading}

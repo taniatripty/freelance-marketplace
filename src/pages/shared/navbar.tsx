@@ -48,7 +48,7 @@ const Navbar = () => {
         All Category
       </NavLink>
 
-      <NavLink to="/websitereview" className={linkClass}>
+      <NavLink to="/webreview" className={linkClass}>
         Give Review
       </NavLink>
 

@@ -1,3 +1,5 @@
+
+
 import { useAuth } from "@/AuthContex/UseAuth";
 import useRedirect from "@/hooks/useRedirect";
 import axiosInstance from "@/UseAxios/axios";
@@ -82,14 +84,26 @@ const Register: React.FC = () => {
         photoURL,
       });
 
-      // Save into Database
-      await axiosInstance.post("/auth/register", {
+      // Save into Database (your backend should now return { token, user })
+      const res = await axiosInstance.post("/auth/register", {
         uid: result.user.uid,
         name,
         email,
+        password, // backend will hash this
         role: "client",
         photoURL,
       });
+
+      const { token, user } = res.data.data;
+      console.log(token)
+
+      // Save JWT token
+      localStorage.setItem("token", token);
+
+      // Optionally save user info
+      if (user) {
+        localStorage.setItem("user", JSON.stringify(user));
+      }
 
       toast.success("Registration Successful");
       setTimeout(() => {
@@ -117,13 +131,23 @@ const Register: React.FC = () => {
 
       const result = await Googlelogin();
 
-      await axiosInstance.post("/auth/register", {
+      const res = await axiosInstance.post("/auth/register", {
         uid: result.user.uid,
         name: result.user.displayName,
         email: result.user.email,
         role: "client",
         photoURL: result.user.photoURL,
       });
+
+      const { token, user } = res.data.data;
+console.log(token)
+      // Save JWT token
+      localStorage.setItem("token", token);
+
+      // Optionally save user info
+      if (user) {
+        localStorage.setItem("user", JSON.stringify(user));
+      }
 
       toast.success("Google Login Successful");
       setTimeout(() => {
@@ -174,8 +198,6 @@ const Register: React.FC = () => {
               onChange={(e) => setEmail(e.target.value)}
             />
           </div>
-
-          {/* Profile Image */}
 
           {/* Profile Image */}
 
