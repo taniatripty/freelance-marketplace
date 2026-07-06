@@ -1,3 +1,4 @@
+
 import axiosInstance from "@/UseAxios/axios";
 import { useQuery } from "@tanstack/react-query";
 import {
@@ -90,16 +91,17 @@ const StatisticsChart = () => {
   ];
 
   return (
-    <div className="grid gap-6 xl:grid-cols-2">
-      <div className="rounded-2xl border bg-white p-5 shadow-sm">
-        <h2 className="mb-1 text-xl font-semibold text-slate-900">
+    <div className="grid gap-6 px-4 sm:px-6 lg:px-8">
+      {/* Users Distribution */}
+      <div className="rounded-2xl border bg-white p-4 sm:p-5 shadow-sm">
+        <h2 className="mb-1 text-base sm:text-xl font-semibold text-slate-900">
           Users Distribution
         </h2>
-        <p className="mb-5 text-sm text-slate-500">
+        <p className="mb-4 sm:mb-5 text-xs sm:text-sm text-slate-500">
           Breakdown of buyers, freelancers, and admins.
         </p>
 
-        <div className="h-[340px] w-full">
+        <div className="h-[280px] sm:h-[320px] w-full">
           <ResponsiveContainer width="100%" height="100%">
             <PieChart>
               <Pie
@@ -108,8 +110,8 @@ const StatisticsChart = () => {
                 nameKey="name"
                 cx="50%"
                 cy="50%"
-                innerRadius={70}
-                outerRadius={110}
+                innerRadius={60}
+                outerRadius={90}
                 paddingAngle={3}
               >
                 {userData.map((_, index) => (
@@ -120,32 +122,52 @@ const StatisticsChart = () => {
                 ))}
               </Pie>
               <Tooltip />
-              <Legend />
+              <Legend 
+                wrapperStyle={{ 
+                  fontSize: '12px',
+                  paddingTop: '10px'
+                }} 
+              />
             </PieChart>
           </ResponsiveContainer>
         </div>
       </div>
 
-      <div className="rounded-2xl border bg-white p-5 shadow-sm">
-        <h2 className="mb-1 text-xl font-semibold text-slate-900">
+      {/* Orders Status */}
+      <div className="rounded-2xl border bg-white p-4 sm:p-5 shadow-sm">
+        <h2 className="mb-1 text-base sm:text-xl font-semibold text-slate-900">
           Orders Status
         </h2>
-        <p className="mb-5 text-sm text-slate-500">
+        <p className="mb-4 sm:mb-5 text-xs sm:text-sm text-slate-500">
           Order status breakdown from your dashboard data.
         </p>
 
-        <div className="h-[340px] w-full">
+        <div className="h-[280px] sm:h-[320px] w-full">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart
               data={orderData}
-              margin={{ top: 10, right: 20, left: 0, bottom: 0 }}
+              margin={{ top: 10, right: 10, left: -10, bottom: 0 }}
             >
               <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
-              <XAxis dataKey="name" stroke="#64748b" />
-              <YAxis stroke="#64748b" />
+              <XAxis 
+                dataKey="name" 
+                stroke="#64748b" 
+                tick={{ fontSize: 11 }}
+                interval={0}
+              />
+              <YAxis 
+                stroke="#64748b" 
+                tick={{ fontSize: 11 }}
+                width={30}
+              />
               <Tooltip />
-              <Legend />
-              <Bar dataKey="value" fill="#4f46e5" radius={[8, 8, 0, 0]} />
+              <Legend 
+                wrapperStyle={{ 
+                  fontSize: '12px',
+                  paddingTop: '10px'
+                }} 
+              />
+              <Bar dataKey="value" fill="#4f46e5" radius={[6, 6, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </div>

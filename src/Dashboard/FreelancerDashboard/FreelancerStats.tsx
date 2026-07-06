@@ -1,168 +1,3 @@
-// import { useEffect, useState } from "react";
-// import {
-//   DollarSign,
-//   Briefcase,
-//   ShoppingCart,
-//   CheckCircle,
-// } from "lucide-react";
-
-// import axiosInstance from "@/UseAxios/axios";
-// import { useAuth } from "@/AuthContex/UseAuth";
-
-// interface FreelancerStats {
-//   totalGigs: number;
-//   totalOrders: number;
-//   completedOrders: number;
-//   totalEarnings: number;
-// }
-
-// const FreelancerStats = () => {
-//   const { user } = useAuth();
-
-//   const [stats, setStats] = useState<FreelancerStats>({
-//     totalGigs: 0,
-//     totalOrders: 0,
-//     completedOrders: 0,
-//     totalEarnings: 0,
-//   });
-
-//   const [loading, setLoading] = useState(true);
-
-//   useEffect(() => {
-//     if (!user?.uid) return;
-
-//     const fetchStats = async () => {
-//       try {
-//         const res = await axiosInstance.get(
-//           `/stas/freelancerstats/${user.uid}`
-//         );
-
-//         setStats(res.data.data);
-//       } catch (error) {
-//         console.log(error);
-//       } finally {
-//         setLoading(false);
-//       }
-//     };
-
-//     fetchStats();
-//   }, [user?.uid]);
-
-//   if (loading) {
-//     return (
-//       <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-4">
-//         {[1, 2, 3, 4].map((item) => (
-//           <div
-//             key={item}
-//             className="h-36 rounded-2xl bg-gray-100 animate-pulse"
-//           />
-//         ))}
-//       </div>
-//     );
-//   }
-
-//   const cards = [
-//     {
-//       title: "Total Earnings",
-//       value: `$${stats.totalEarnings}`,
-//       icon: DollarSign,
-//       bg: "bg-green-100",
-//       color: "text-green-600",
-//     },
-//     {
-//       title: "My Gigs",
-//       value: stats.totalGigs,
-//       icon: Briefcase,
-//       bg: "bg-blue-100",
-//       color: "text-blue-600",
-//     },
-//     {
-//       title: "Total Orders",
-//       value: stats.totalOrders,
-//       icon: ShoppingCart,
-//       bg: "bg-orange-100",
-//       color: "text-orange-600",
-//     },
-//     {
-//       title: "Completed Orders",
-//       value: stats.completedOrders,
-//       icon: CheckCircle,
-//       bg: "bg-purple-100",
-//       color: "text-purple-600",
-//     },
-//   ];
-
-//   return (
-//    <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-4">
-//   {cards.map((card) => {
-//     const Icon = card.icon;
-
-//     return (
-//       <div
-//         key={card.title}
-//         className="group relative overflow-hidden rounded-3xl border border-slate-200 bg-white p-6 transition-all duration-300 hover:-translate-y-1 hover:border-indigo-400 hover:shadow-xl"
-//       >
-//         {/* Grid Background */}
-//         <div
-//           className="absolute inset-0 opacity-40"
-//           style={{
-//             backgroundImage: `
-//               linear-gradient(to right,#e5e7eb 1px,transparent 1px),
-//               linear-gradient(to bottom,#e5e7eb 1px,transparent 1px)
-//             `,
-//             backgroundSize: "26px 26px",
-//           }}
-//         />
-
-//         {/* Colored Glow */}
-//         <div
-//           className={`absolute -right-12 -top-12 h-36 w-36 rounded-full blur-3xl opacity-20 transition-all duration-500 group-hover:opacity-40 ${card.bg}`}
-//         />
-
-//         <div className="relative z-10">
-//           <div className="flex items-start justify-between">
-//             <div>
-//               <p className="text-sm font-medium text-slate-500">
-//                 {card.title}
-//               </p>
-
-//               <h2 className="mt-3 text-4xl font-bold tracking-tight text-slate-900">
-//                 {card.value}
-//               </h2>
-//             </div>
-
-//             <div
-//               className={`flex h-14 w-14 items-center justify-center rounded-2xl ${card.bg} shadow-sm transition-all duration-300 group-hover:scale-110`}
-//             >
-//               <Icon
-//                 size={28}
-//                 className={card.color}
-//               />
-//             </div>
-//           </div>
-
-//           <div className="mt-8 flex items-center justify-between">
-//             <div className="flex items-center gap-2">
-//               <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
-
-//               <span className="text-xs text-slate-500">
-//                 Live statistics
-//               </span>
-//             </div>
-
-//             <div className="h-1.5 w-20 overflow-hidden rounded-full bg-slate-100">
-//               <div className="h-full w-2/3 rounded-full bg-indigo-500 transition-all duration-700 group-hover:w-full" />
-//             </div>
-//           </div>
-//         </div>
-//       </div>
-//     );
-//   })}
-// </div>
-//   );
-// };
-
-// export default FreelancerStats;
 
 import { useEffect, useState } from "react";
 import axiosInstance from "@/UseAxios/axios";
@@ -184,13 +19,12 @@ interface FreelancerStatsData {
 const FreelancerStats = () => {
   const { user } = useAuth();
 
-  const [stats, setStats] =
-    useState<FreelancerStatsData>({
-      totalGigs: 0,
-      totalOrders: 0,
-      completedOrders: 0,
-      totalEarnings: 0,
-    });
+  const [stats, setStats] = useState<FreelancerStatsData>({
+    totalGigs: 0,
+    totalOrders: 0,
+    completedOrders: 0,
+    totalEarnings: 0,
+  });
 
   const [loading, setLoading] = useState(true);
 
@@ -217,7 +51,9 @@ const FreelancerStats = () => {
   if (loading) {
     return (
       <div className="flex justify-center py-16">
-        Loading statistics...
+        <div className="rounded-2xl border bg-white px-6 py-4 shadow-sm text-slate-600">
+          Loading statistics...
+        </div>
       </div>
     );
   }
@@ -258,54 +94,57 @@ const FreelancerStats = () => {
   ];
 
   return (
-    <div className="max-w-6xl mx-auto px-4 ">
-    <h1 className="text-3xl font-black mb-8 text-center text-indigo-600">Freelancer Overview</h1>
-    <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-4">
-      {cards.map((card) => {
-        const Icon = card.icon;
+    <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+      <h1 className="text-2xl sm:text-3xl font-black mb-6 sm:mb-8 text-center text-indigo-600">
+        Freelancer Overview
+      </h1>
+      
+      <div className="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
+        {cards.map((card) => {
+          const Icon = card.icon;
 
-        return (
-          <div
-            key={card.title}
-            className={`rounded-3xl border-2 bg-white p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl ${card.border}`}
-          >
-            <div className="flex items-start justify-between">
-              <div>
-                <p className="text-sm font-medium text-slate-500">
-                  {card.title}
-                </p>
+          return (
+            <div
+              key={card.title}
+              className={`rounded-2xl sm:rounded-3xl border-2 bg-white p-5 sm:p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl ${card.border}`}
+            >
+              <div className="flex items-start justify-between">
+                <div>
+                  <p className="text-xs sm:text-sm font-medium text-slate-500">
+                    {card.title}
+                  </p>
 
-                <h2 className="mt-4 text-4xl font-bold text-slate-900">
-                  {card.value}
-                </h2>
+                  <h2 className="mt-3 sm:mt-4 text-3xl sm:text-4xl font-bold text-slate-900">
+                    {card.value}
+                  </h2>
+                </div>
+
+                <div
+                  className={`flex h-12 w-12 sm:h-14 sm:w-14 items-center justify-center rounded-xl sm:rounded-2xl ${card.iconBg}`}
+                >
+                  <Icon
+                    size={24}
+                    className={`${card.iconColor} sm:w-7 sm:h-7`}
+                  />
+                </div>
               </div>
 
-              <div
-                className={`flex h-14 w-14 items-center justify-center rounded-2xl ${card.iconBg}`}
-              >
-                <Icon
-                  size={28}
-                  className={card.iconColor}
-                />
-              </div>
-            </div>
-
-            <div className="mt-8 flex items-center justify-between">
-              <span className="text-xs text-slate-400">
-                Updated just now
-              </span>
-
-              <div className="flex items-center gap-2">
-                <span className="h-2 w-2 rounded-full bg-green-500 animate-pulse"></span>
-                <span className="text-xs font-medium text-green-600">
-                  Live
+              <div className="mt-6 sm:mt-8 flex items-center justify-between">
+                <span className="text-xs text-slate-400">
+                  Updated just now
                 </span>
+
+                <div className="flex items-center gap-2">
+                  <span className="h-2 w-2 rounded-full bg-green-500 animate-pulse"></span>
+                  <span className="text-xs font-medium text-green-600">
+                    Live
+                  </span>
+                </div>
               </div>
             </div>
-          </div>
-        );
-      })}
-    </div>
+          );
+        })}
+      </div>
     </div>
   );
 };

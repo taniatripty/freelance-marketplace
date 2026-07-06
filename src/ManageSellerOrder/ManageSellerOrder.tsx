@@ -1,3 +1,4 @@
+
 import { useAuth } from "@/AuthContex/UseAuth";
 import axiosInstance from "@/UseAxios/axios";
 import { useEffect, useState } from "react";
@@ -117,41 +118,26 @@ const ManageSellerOrders = () => {
   };
 
   // ---------------- STATUS COLOR ----------------
-  // const statusColor = (status: string) => {
-  //   switch (status) {
-  //     case "pending":
-  //       return "bg-yellow-100 text-yellow-700";
-  //     case "accepted":
-  //       return "bg-blue-100 text-blue-700";
-  //     case "in_progress":
-  //       return "bg-purple-100 text-purple-700";
-  //     case "completed":
-  //       return "bg-green-100 text-green-700";
-  //     default:
-  //       return "bg-gray-100 text-gray-600";
-  //   }
-  // };
-
   const statusColor = (status: string) => {
     switch (status) {
       case "pending":
-        return " text-yellow-700";
+        return "text-yellow-700";
 
       case "accepted":
-        return " text-blue-700";
+        return "text-blue-700";
 
       case "in_progress":
-        return " text-purple-700";
+        return "text-purple-700";
 
       case "completed":
         return "text-green-700";
 
       case "cancelled_by_buyer":
       case "cancelled_by_seller":
-        return " text-red-700";
+        return "text-red-700";
 
       default:
-        return " text-gray-600";
+        return "text-gray-600";
     }
   };
 
@@ -161,112 +147,143 @@ const ManageSellerOrders = () => {
 
   if (loading) {
     return (
-      <div className="text-center py-20 text-gray-500">Loading Orders...</div>
+      <div className="text-center py-20 text-gray-500">
+        <div className="inline-block rounded-2xl border bg-white px-6 py-4 shadow-sm">
+          Loading Orders...
+        </div>
+      </div>
     );
   }
 
   return (
-    <div className="max-w-6xl mx-auto px-4 py-10">
-      <h1 className="text-3xl font-bold mb-8 text-center">Manage Orders</h1>
+    <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-10">
+      <h1 className="text-2xl sm:text-3xl font-bold mb-6 sm:mb-8 text-center">
+        Manage Orders
+      </h1>
 
-      <div className="grid md:grid-cols-2 gap-6">
-        {orders.map((order) => {
-          const unread = getUnreadMessageCount(order._id);
+      {orders.length === 0 ? (
+        <div className="text-center py-16">
+          <div className="rounded-2xl border bg-white p-8 shadow-sm">
+            <p className="text-lg font-semibold text-gray-700">No orders yet</p>
+            <p className="mt-2 text-sm text-gray-500">
+              You'll see your orders here when buyers purchase your gigs.
+            </p>
+          </div>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+          {orders.map((order) => {
+            const unread = getUnreadMessageCount(order._id);
 
-          return (
-            <div
-              key={order._id}
-              className="relative bg-white border rounded-2xl p-5 shadow-sm"
-            >
-              {/* HEADER */}
-              <div className="flex justify-between">
-                <div>
-                  <h2 className="text-lg font-semibold">{order.gigTitle}</h2>
-                  <p className="text-sm text-gray-500">
-                    Buyer: {order.buyerName}
+            return (
+              <div
+                key={order._id}
+                className="relative bg-white border rounded-2xl p-4 sm:p-5 shadow-sm"
+              >
+                {/* HEADER */}
+                <div className="flex justify-between items-start gap-3">
+                  <div className="min-w-0 flex-1">
+                    <h2 className="text-base sm:text-lg font-semibold truncate">
+                      {order.gigTitle}
+                    </h2>
+                    <p className="text-xs sm:text-sm text-gray-500 mt-1">
+                      Buyer: {order.buyerName}
+                    </p>
+                  </div>
+
+                  <span
+                    className={`text-xs font-semibold capitalize whitespace-nowrap ${statusColor(
+                      order.status,
+                    )}`}
+                  >
+                    {order.status.replace(/_/g, " ")}
+                  </span>
+                </div>
+
+                {/* INFO */}
+                <div className="mt-4 text-xs sm:text-sm space-y-1">
+                  <p className="font-medium text-gray-700">
+                    💰 ${order.price}
+                  </p>
+                  <p className="text-gray-500">
+                    📅 {new Date(order.createdAt).toLocaleDateString()}
                   </p>
                 </div>
 
-                <span
-                  className={` text-xs ${statusColor(
-                    order.status,
-                  )}`}
-                >
-                  {order.status}
-                </span>
-              </div>
-
-              {/* INFO */}
-              <div className="mt-4 text-sm">
-                <p>💰 ${order.price}</p>
-                <p>📅 {new Date(order.createdAt).toLocaleDateString()}</p>
-              </div>
-
-              {/* ACTIONS */}
-              <div className="mt-5 flex gap-2 flex-wrap">
-                {/* ACCEPT */}
-                {order.status === "pending" && (
-                  <button
-                    onClick={() => updateStatus(order._id, "accepted")}
-                    className="px-4 py-2 bg-blue-600 text-white  text-sm"
-                  >
-                    Accept
-                  </button>
-                )}
-
-                {/* START WORK */}
-                {order.status === "accepted" && (
-                  <button
-                    onClick={() => updateStatus(order._id, "in_progress")}
-                    className="px-4 py-2 bg-purple-600 text-white  text-sm"
-                  >
-                    Start Work
-                  </button>
-                )}
-
-                {/* COMPLETE */}
-                {order.status === "in_progress" && (
-                  <button
-                    onClick={() => updateStatus(order._id, "completed")}
-                    className="px-4 py-2 bg-green-600 text-white text-sm"
-                  >
-                    Complete
-                  </button>
-                )}
-
-                {/* 💬 CHAT BUTTON (FIXED) */}
-                {canChat(order.status) && (
-                  <button
-                    onClick={() => navigate(`/chat/${order._id}`)}
-                    className="relative px-4 py-2 bg-green-600 text-white rounded-lg text-sm flex items-center gap-2"
-                  >
-                    💬 Chat
-                    {/* 🔥 ONLY MESSAGE TYPE UNREAD */}
-                    {unread > 0 && (
-                      <span className="bg-red-500 text-xs px-2 py-0.5 rounded-full animate-pulse">
-                        {unread}
-                      </span>
-                    )}
-                  </button>
-                )}
-                {/* CANCEL ORDER */}
-                {(order.status === "pending" || order.status === "accepted") &&
-                  order.paymentStatus !== "paid" && (
+                {/* ACTIONS */}
+                <div className="mt-5 flex flex-wrap gap-2">
+                  {/* ACCEPT */}
+                  {order.status === "pending" && (
                     <button
-                      onClick={() => cancelOrder(order._id)}
-                      className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg text-sm"
+                      onClick={() => updateStatus(order._id, "accepted")}
+                      disabled={updatingId === order._id}
+                      className="flex-1 sm:flex-none px-3 sm:px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs sm:text-sm disabled:opacity-50 disabled:cursor-not-allowed"
                     >
-                      Cancel Order
+                      Accept
                     </button>
                   )}
-                {updatingId === order._id && (
-                  <span className="text-sm text-gray-500">Updating...</span>
-                )}
+
+                  {/* START WORK */}
+                  {order.status === "accepted" && (
+                    <button
+                      onClick={() => updateStatus(order._id, "in_progress")}
+                      disabled={updatingId === order._id}
+                      className="flex-1 sm:flex-none px-3 sm:px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg text-xs sm:text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      Start Work
+                    </button>
+                  )}
+
+                  {/* COMPLETE */}
+                  {order.status === "in_progress" && (
+                    <button
+                      onClick={() => updateStatus(order._id, "completed")}
+                      disabled={updatingId === order._id}
+                      className="flex-1 sm:flex-none px-3 sm:px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg text-xs sm:text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      Complete
+                    </button>
+                  )}
+
+                  {/* 💬 CHAT BUTTON */}
+                  {canChat(order.status) && (
+                    <button
+                      onClick={() => navigate(`/chat/${order._id}`)}
+                      className="flex-1 sm:flex-none px-3 sm:px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg text-xs sm:text-sm flex items-center gap-2"
+                    >
+                      💬 Chat
+                      {/* 🔥 ONLY MESSAGE TYPE UNREAD */}
+                      {unread > 0 && (
+                        <span className="bg-red-500 text-white text-xs px-2 py-0.5 rounded-full animate-pulse min-w-[20px] text-center">
+                          {unread}
+                        </span>
+                      )}
+                    </button>
+                  )}
+                  
+                  {/* CANCEL ORDER */}
+                  {(order.status === "pending" || order.status === "accepted") &&
+                    order.paymentStatus !== "paid" && (
+                      <button
+                        onClick={() => cancelOrder(order._id)}
+                        disabled={updatingId === order._id}
+                        className="flex-1 sm:flex-none px-3 sm:px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg text-xs sm:text-sm disabled:opacity-50 disabled:cursor-not-allowed w-full sm:w-auto"
+                      >
+                        Cancel
+                      </button>
+                    )}
+                    
+                  {updatingId === order._id && (
+                    <span className="text-xs text-gray-500 flex items-center">
+                      Updating...
+                    </span>
+                  )}
+                </div>
               </div>
-            </div>
-          );
-        })}
-      </div>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 };
